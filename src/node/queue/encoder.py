@@ -1,7 +1,8 @@
-from fsqueue import FSJobManager
-from queue import Process
+from xmlqueue import XMLJobManager
+from queue import Executor,Queue
 from shutil import rmtree
 import os
+import re
 
 
 class Preset:
@@ -109,18 +110,17 @@ class FFmpegHandler:
     #            this.onProgress(int(ret[6:11].strip())/this.frames*100.0)
 
 
-
-class EncodingProcess(Process):
-  def __init__(self,jdesc,rep,workdir):
-    super(EncodingProcess,self).__init__(jdesc,rep)
-    self.workdir=workdir
-    os.makedirs(self.workdir)
+class PrintExecutor(Executor):
   def run(self):
-    pass
-  def cleanup(self):
-    rmtree(self.workdir)
-    
+    print self.task.attributes["MESSAGE"]
 
-class EncodingJobManager(FSJobManager):
-  def createProcess(self,jdesc):
-    return EncodingProcess(jdesc,self.reporter,self.workdirs+"/"+jdesc.id)
+
+def main():
+  jman=XMLJobManager(".")
+  jman.registerExecutor("print",PrintExecutor)
+  queue=Queue(jman)
+  queue.run()
+
+  
+
+main()

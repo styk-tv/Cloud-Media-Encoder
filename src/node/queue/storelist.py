@@ -49,4 +49,5 @@ class StoreList:
       for store in disk.stores: self.stores[store.uuid]=store
       
   def getByUuid(self,uuid):
-    return self.stores[uuid]
+    if stores.hasKey(uuid):  return self.stores[uuid]
+    else: return None
