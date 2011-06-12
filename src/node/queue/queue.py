@@ -1,5 +1,5 @@
 from time import sleep
-
+import logging
 
 interval=10
 
@@ -18,21 +18,20 @@ class Workflow(object):
 
 ST_PENDING,ST_WORKING,ST_FINISHED,ST_ERROR=range(4)
 
-class ProgressReporter(object):
-  def setStatus(self, workflow,jdesc,status,progress,message):
-    pass
-  def setStatus(self,workflow,status,progress,message):
+class AbstractProgressReporter(object):
+  def setStatus(self,status,progress,message, workflow,task=None):
     pass
   def setCurrent(self, workflow,jdesc):
     pass
 
-class Executor(object):
-  def __init__(self,workflow,task):
+class AbstractTaskExecutor(object):
+  def __init__(self,reporter, workflow,task):
     self.workflow=workflow
     self.task=task
+    self.reporter=reporter
   def run(self):
     pass
-
+    
 class WorkflowManager(object):
   def __init__(self):
     self.executors={}
@@ -40,15 +39,15 @@ class WorkflowManager(object):
   def getNextWorkflow(self):
     return None
   def getProgressReporter(self):
-    return ProgressReporter()
+    return AbstractProgressReporter()
   def releaseWorkflow(self,jdesc):
     pass
   def getTaskExecutor(self,workflow,task):
-    if self.executors.hasKey(task.action): return self.executors[task.action](workflow,task)
+    if self.executors.has_key(task.action): return self.executors[task.action](self.getProgressReporter(), workflow,task)
     else: raise Exception("Don't know how to execute "+task.action)
  
   def registerExecutor(self,action,cls):
-    assert(issubclass(cls,Executor))
+    assert(issubclass(cls,AbstractTaskExecutor))
     self.executors[action]=cls
   
   
@@ -63,23 +62,27 @@ class Queue:
       if jdesc<>None: self.perform(jdesc)
       else: sleep(interval)
   
-  def perform(self,jdesc):
-    self.reporter.setStatus(workflow,ST_WORKING,0,"WORKING")
+  def perform(self,workflow):
+    logging.info("Starting workflow "+workflow.id)
+    self.reporter.setStatus(ST_WORKING,0,"WORKING",workflow)
     i=0
     for task in workflow.tasks:
       self.reporter.setCurrent(workflow,task)
-      self.reporter.setStatus(workflow,task,ST_WORKING,0,"WORKING")
+      self.reporter.setStatus(ST_WORKING,0,"WORKING",workflow,task)
       try:
-	executor=this.jman.getTaskExecutor(self.workflow,task)
-	executor.execute(task,reporter)
-	self.reporter.setStatus(self.workflow,task,ST_FINISHED,100,"FINISHED")
-	i=i+1
-        self.reporter.setStatus(workflow,ST_WORKING,i/len(workflow.tasks),"WORKING")
+        executor=self.jman.getTaskExecutor(workflow,task)
+        logging.info("Starting task "+task.id)
+        executor.run()
+        logging.info("Finished task "+task.id)
+        self.reporter.setStatus(ST_FINISHED,100,"FINISHED",workflow,task)
+#	i=i+1
+#       self.reporter.setStatus(ST_WORKING,i/len(workflow.tasks),"WORKING",workflow)
       except Exception,e:
-	self.reporter.setStatus(workflow,task,ST_ERROR,100,e)
-	self.jman.releaseWorkflow(workflow)
-	return
-    self.reporter.setStatus(workflow,task,ST_FINISHED,100,"FINISHED")
+        self.reporter.setStatus(ST_ERROR,100,e,workflow,task)
+        logging.exception("Error during workflow "+workflow.id+" task "+task.id)
+        self.jman.releaseWorkflow(workflow)
+        return
+    self.reporter.setStatus(ST_FINISHED,100,"FINISHED",workflow,task)
     self.jman.releaseWorkflow(workflow)
       
   

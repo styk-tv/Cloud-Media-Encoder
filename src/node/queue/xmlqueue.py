@@ -1,9 +1,8 @@
 from xml.dom.minidom import getDOMImplementation,parse
 from queue import *
 from storelist import StoreList
+from config import Config
 import os
-
-QUEUEFILE="Queue.xml"
 
 class XMLTask(Task):
   def __init__(self,element):
@@ -30,32 +29,13 @@ class XMLWorkflow(Workflow):
   def isSourceReady(self):
       return self.tasks[0].isSourceReady()
 
-class XMLProgressReporter(ProgressReporter):
-  def __init__(self, directory):
-    self.target=directory+"/status"
-    if not os.path.exists(self.target): os.makedirs(self.target)
-  def  setStatus(self, jdesc,status,progress,message):
-    impl=getDOMImplementation()
-    doc=impl.createDocument(None, "status", None)
-    doc.documentElement.setAttribute("code",status)
-    doc.documentElement.setAttribute("progress",progress)
-    doc.documentElement.appendChild(doc.createTextNode(message))
-    f=open(self.target+"/current.xml", 'w')
-    doc.writexml(f)
-    doc.unlink()
-   
-  def setCurrent(self, jdesc):
-    os.remove(self.target+"/current.xml")
-    os.symlink(self.target+"/"+jdesc.id+".xml",self.target+"/current.xml")
-    
    
     
-class XMLJobManager(WorkflowManager):
+class XMLJobManager(WorkflowManager, AbstractProgressReporter):
   
-  def __init__(self,directory):
+  def __init__(self,target=Config.QUEUEDIR+"/Queue.xml"):
     super(XMLJobManager,self).__init__()
-    self.target=directory+"/"+QUEUEFILE
-    self.pgrep=XMLProgressReporter(directory)
+    self.target=target
      
   def getNextWorkflow(self):
     doc=parse(open(self.target,"r"))
@@ -63,6 +43,21 @@ class XMLJobManager(WorkflowManager):
       wflow=XMLWorkflow(wfnode)
       if wflow.isSourceReady(): return wflow  
     return None
-  def releaseJob(self,jdesc):
-    pass
-
+  def getProgressReporter(self):
+      return self
+  def _getWorkflowElement(self, workflow):
+    with open(self.target, "r") as f: doc=parse(f)
+    for wfnode in doc.getElementsByTagName("workflow"):
+      guid=wfnode.getAttribute("guid")
+      if guid==workflow.id:  return (doc, wfnode)
+    return (doc, None)
+  def releaseWorkflow(self,workflow):
+    (doc, wfnode)=self._getWorkflowElement(workflow)
+    if wfnode<>None:
+        doc.documentElement.removeChild(wfnode)
+        with open(self.target, "w") as f: doc.writexml(f)
+        return
+  def setCurrent(self,workflow, task):
+      pass
+  def  setStatus(self, status,progress,message, workflow, task=None):
+        pass

@@ -1,0 +1,10 @@
+<stores>
+     <disk guid="disk1" host="192.168.1.211">
+          <store guid="store1" type="EI" />
+          <store guid="store2" type="EO" /> 
+     </disk>
+     <disk guid="92C9C3BD61CB42B688F9D554D6E7BD69" host="192.168.1.227">
+          <store guid="96C35A76B458441FB24504D626984F48" type="DO"/>
+          <store guid="92C9C3BD61CB42B688F9D554D6E7BD69" type="AS"/>
+     </disk>
+</stores>

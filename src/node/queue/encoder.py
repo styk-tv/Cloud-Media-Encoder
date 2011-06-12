@@ -1,8 +1,12 @@
 from xmlqueue import XMLJobManager
-from queue import Executor,Queue
+from queue import AbstractTaskExecutor,Queue
+from encoderlist import EncodersList
+from storelist import StoreList
 from shutil import rmtree
 import os
 import re
+import subprocess
+
 
 
 class Preset:
@@ -36,7 +40,7 @@ class FileInfo:
         this.frames=0
         
         xargs=["ffmpeg","-i",filename]
-        ff=subprocess.Popen(args=xargs, executable=ffmpeg_exec, stderr=subprocess.PIPE)
+        ff=subprocess.Popen(args=xargs, executable="ffmpeg", stderr=subprocess.PIPE)
         while ff.returncode==None:
             out=ff.communicate()[1]
             for ret in out.splitlines():
@@ -58,7 +62,7 @@ class FileInfo:
         return seconds
 
     def parseFps(this,line):
-        end=line.find(" tbr");
+        end=line.find(" fps");
         if end==-1: return 0
         start=line.rfind(" ",0,end-1);
         return float(line[start+1:end])
@@ -70,28 +74,20 @@ class FileInfo:
         return "V: "+str(this.width)+"x"+str(this.height)+" "+str(this.duration)+"s at "+str(this.fps)+" - "+str(this.frames)+" frames"
 
 class FFmpegHandler:
-    def __init__(this, preset,  localfile,  outfile,  bitrate, frames):
-        this.preset=preset
+    def __init__(this, eparams ,  localfile,  outfile, frames):
+        this.eparams=eparams
         this.infile=localfile
         this.outfile=outfile
-        this.env={"FFMPEG_DATADIR" : presetsdir}
-        this.bitrate=bitrate
+    #    this.env={"FFMPEG_DATADIR" : presetsdir}
         this.frames=frames
-        this.commonargs=["ffmpeg", "-y", "-i", localfile,  "-threads", "0", "-vcodec", "libx264", "-r", this.preset.fps, "-vpre", this.preset.name, "-s", this.preset.size, "-b", bitrate]
-    def pass1(this): 
+        this.commonargs=["ffmpeg", "-y", "-i", localfile]
+        if len(eparams.extraparams)>0: this.commonargs+=eparams.extraparams.split(" ")
+        this.commonargs+=[ "-vcodec", this.eparams.vcodec, "-r", this.eparams.fps,  "-s", this.eparams.width+"x"+this.eparams.height, "-b", this.eparams.bitrate]
+    def run(this):
         xargs=this.commonargs[:]
-        xargs+=["-an", "-pass", "1", "-f", "mpegts", "/dev/null"]
-        print "Starting first pass", xargs
-        ff=subprocess.Popen(args=xargs, executable=ffmpeg_exec,  env=this.env, stderr=subprocess.PIPE)
-        this.process(ff)
-        ret=ff.wait()
-        if ret!=0:
-            raise Exception("FFMpeg could not process the file");
-    def pass2(this):
-        xargs=this.commonargs[:]
-        xargs+=["-acodec", "aac", "-ac","2","-ar", "44100", "-ab",this.preset.audiobitrate, "-pass", "2", this.outfile]
+        xargs+=["-acodec", this.eparams.acodec, "-ac","2","-ar", "44100", "-ab",this.eparams.audiobitrate,  this.outfile]
         print "Starting second pass", xargs
-        ff=subprocess.Popen(args=xargs, executable=ffmpeg_exec,  env=this.env, stderr=subprocess.PIPE)
+        ff=subprocess.Popen(args=xargs, executable="ffmpeg",   stderr=subprocess.PIPE)
         this.process(ff)
         ret=ff.wait()
         if ret!=0:
@@ -102,6 +98,7 @@ class FFmpegHandler:
             l=ff.stderr.read(32)
             if len(l)==0: break
             buf+=l
+            print l
             while buf.find("\r")!=-1:
                 i=buf.find("\r")
                 ret=buf[:i-1]
@@ -110,14 +107,34 @@ class FFmpegHandler:
     #            this.onProgress(int(ret[6:11].strip())/this.frames*100.0)
 
 
-class PrintExecutor(Executor):
+class PrintExecutor(AbstractTaskExecutor):
   def run(self):
+    print "AAA"
     print self.task.attributes["MESSAGE"]
 
-
+class EncoderExecutor(AbstractTaskExecutor):
+    def __init__(self,reporter, workflow,task):
+        super(EncoderExecutor, self).__init__(reporter, workflow, task)
+        elist=EncodersList()
+        self.eparams=elist.getByUuid(task.attributes["encoder"]) 
+        if self.eparams.type<>"ffmpeg": raise Exception("Unknown encoder type "+self.eparams.type)
+        slist=StoreList()
+        
+        self.srcfile=slist.getByUuid(task.attributes["srcStore"]).findAssetFile(task.attributes["srcAssetItem"], task.attributes["srcAssetItemType"])
+        targetdir=slist.getByUuid(task.attributes["destStore"]).findAsset(task.attributes["srcAssetItem"])
+        if not os.path.exists(targetdir): os.makedirs(targetdir)
+        self.outfile=slist.getByUuid(task.attributes["destStore"]).findAssetFile(task.attributes["srcAssetItem"], self.eparams.outputtype)
+        
+    def run(self):
+        fi=FileInfo(self.srcfile)
+        #FIXME: progress!
+        fmpg=FFmpegHandler(self.eparams,   self.srcfile, self.outfile,  fi.frames)
+        fmpg.run()
+        
 def main():
-  jman=XMLJobManager(".")
-  jman.registerExecutor("print",PrintExecutor)
+  jman=XMLJobManager()
+  jman.registerExecutor("PRINT",PrintExecutor)
+  jman.registerExecutor("ENCODE",  EncoderExecutor)
   queue=Queue(jman)
   queue.run()
 

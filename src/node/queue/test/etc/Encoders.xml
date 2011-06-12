@@ -1,0 +1,5 @@
+<encoders>
+        <encoder type="ffmpeg" version="2.15" width="800" height="600" vcodec="flv" acodec="libmp3lame" bitrate="800000" audiobitrate="64000" 
+            fps="25" extraparams="" guid="mp4encoder" outputType="flv"  />
+        <encoder type="ffmpeg" version="2.16" params="-vcodec copy -vbsf h264_mp4toannexb -an" guid="C53F833BB2D6416380C1ABF051D43ED6" />
+</encoders>
