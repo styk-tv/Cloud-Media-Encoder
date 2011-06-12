@@ -2,6 +2,7 @@ from xml.dom.minidom import getDOMImplementation,parse
 from queue import *
 from storelist import StoreList
 from config import Config
+from datetime import datetime
 import os
 
 class XMLTask(Task):
@@ -40,6 +41,7 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
   def getNextWorkflow(self):
     doc=parse(open(self.target,"r"))
     for wfnode in doc.getElementsByTagName("workflow"):
+      if len(wfnode.getAttribute("dateStart"))>0: continue
       wflow=XMLWorkflow(wfnode)
       if wflow.isSourceReady(): return wflow  
     return None
@@ -52,12 +54,20 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
       if guid==workflow.id:  return (doc, wfnode)
     return (doc, None)
   def releaseWorkflow(self,workflow):
-    (doc, wfnode)=self._getWorkflowElement(workflow)
-    if wfnode<>None:
-        doc.documentElement.removeChild(wfnode)
-        with open(self.target, "w") as f: doc.writexml(f)
-        return
+      pass
+#    (doc, wfnode)=self._getWorkflowElement(workflow)
+  #  if wfnode<>None:
+    #    doc.documentElement.removeChild(wfnode)
+      #  with open(self.target, "w") as f: doc.writexml(f)
+       # return
   def setCurrent(self,workflow, task):
       pass
   def  setStatus(self, status,progress,message, workflow, task=None):
-        pass
+      (doc, wfnode)=self._getWorkflowElement(workflow)
+      wfnode.setAttribute('status', str(status))
+      wfnode.setAttribute("progress", str(progress))
+      dstart=wfnode.getAttribute("dateStart")
+      if len(dstart)==0: wfnode.setAttribute("dateStart",  datetime.now().ctime())
+      if status==ST_PENDING or status==ST_FINISHED: wfnode.setAttribute("dateCompleted", datetime.now().ctime())
+      with open(self.target, "w") as f: doc.writexml(f)
+      
