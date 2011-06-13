@@ -1,6 +1,6 @@
 from xml.dom.minidom import getDOMImplementation, parse
 import os
-from tools import xmlmsg
+from nodetools.tools import xmlmsg
 import sys
 
 

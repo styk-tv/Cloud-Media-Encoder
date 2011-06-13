@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-from tools import tools,xmlmsg
-from volume import volume
+from nodetools.tools import tools,xmlmsg
+from nodetools.volume import volume
 import sys
 from xml.dom.minidom import getDOMImplementation
 

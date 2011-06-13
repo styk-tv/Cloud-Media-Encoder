@@ -1,0 +1,1 @@
+Before running any of commands, link nodetools/prodconfig.py or testconfig.py to nodetools/config.py

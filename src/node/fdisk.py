@@ -3,8 +3,8 @@
 import re
 from xml.dom.minidom import getDOMImplementation
 import sys
-from tools import tools
-from volume import volume
+from nodetools.tools import tools
+from nodetools.volume import volume
 
 class partition:
   partre=re.compile("([^\s]+)\s([^\d]*)(\d+)[\s]*(\d+)[\s]*([\d]+\+?)[\s]*(\d+)[\s]*(.*)")

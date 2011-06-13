@@ -1,5 +1,5 @@
 from xml.dom.minidom import getDOMImplementation,parse
-from config import Config
+from nodetools.config import Config
 import sys
 
 def xmlmsg(node,msg,rc=1):
