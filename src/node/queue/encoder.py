@@ -9,26 +9,6 @@ import subprocess
 
 
 
-class Preset:
-    def __init__(this, name):
-        f=open(presetsdir+"/"+name+".size")
-        this.fps="25"
-        this.name=name
-        try:
-            this.size=f.readline().strip()
-        finally:
-            f.close()
-        this.bitrates=[]
-        f=open(presetsdir+"/"+name+".bitrates")
-        try:
-            for line in f:
-                this.bitrates+=[line.strip()]
-        finally:
-            f.close()
-        this.audiobitrate=this.bitrates[0]
-        this.bitrates=this.bitrates[1:]
-        print "Using preset ", name, " bitrates", this.bitrates
-
 
 class FileInfo:
     dimregexp=re.compile("([\\w]+)x([\\w]+).*")
@@ -82,7 +62,10 @@ class FFmpegHandler:
         this.frames=frames
         this.commonargs=["ffmpeg", "-y", "-i", localfile]
         if len(eparams.extraparams)>0: this.commonargs+=eparams.extraparams.split(" ")
-        this.commonargs+=[ "-vcodec", this.eparams.vcodec, "-r", this.eparams.fps,  "-s", this.eparams.width+"x"+this.eparams.height, "-b", this.eparams.bitrate]
+        this.commonargs+=[ "-vcodec", this.eparams.vcodec]
+        if this.eparams.fps>0: this.commonargs+=["-r", this.eparams.fps]
+        if this.eparams.width>0 and this.eparams.height>0: this.commonargs+=["-s", this.eparams.width+"x"+this.eparams.height]
+        this.commonargs+=[ "-b", this.eparams.bitrate]
     def run(this):
         xargs=this.commonargs[:]
         xargs+=["-acodec", this.eparams.acodec, "-ac","2","-ar", "44100", "-ab",this.eparams.audiobitrate,  this.outfile]
