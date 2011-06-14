@@ -11,15 +11,15 @@ class volume:
     self.setup(tools.hasPartitions(device))
   def probe(self):
     self.data=tools.getId(self.device)
-    if "UUID" in self.data: self.uuid=self.data["UUID"]
+    if "ID_FS_UUID" in self.data: self.uuid=self.data["ID_FS_UUID"]
     else: self.uuid=None
     
   def setup(self,hasPartitions):
     self.type="other"
     if hasPartitions: return
     if len(self.data)==0: self.type="empty"
-    elif "TYPE" in self.data and self.data["TYPE"]=="ext4" and "LABEL" in self.data:
-      if self.data["LABEL"]=="TX-DATA-WWW": self.type="www"
+    elif "ID_FS_TYPE" in self.data and self.data["ID_FS_TYPE"]=="ext4" and "ID_FS_LABEL" in self.data:
+      if self.data["ID_FS_LABEL"]=="TX-DATA-WWW": self.type="www"
   def prepare(self,dtype):
     (ret,msg)=tools.makeFs(self.device,dtype)
     if ret==0: 
@@ -27,7 +27,7 @@ class volume:
       msg=self.uuid
     return (ret==0,msg)
   def mount(self):
-    target=MOUNTROOT+"/"+self.data["UUID"]
+    target=MOUNTROOT+"/"+self.data["ID_FS_UUID"]
     try:
       if not os.path.exists(target): os.makedirs(target)
     except OSError, e:
