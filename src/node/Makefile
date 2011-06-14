@@ -8,6 +8,8 @@ install:
 	mkdir ${DESTDIR}/opt/node/etc
 	cp nodetools/prodconfig.py ${DESTDIR}/opt/node/nodetools/config.py
 	echo "<queue />" > ${DESTDIR}/opt/node/queue/Queue.xml
+	mkdir -p ${DESTDIR}/etc/udev/rules.d
+	cp extra/*.rules ${DESTDIR}/etc/udev/rules.d
 clean:
 	
 	
