@@ -20,7 +20,14 @@ set -e
 
 case "$1" in
     configure)
+    adduser --system --shell /bin/sh node
+    mkdir -p /home/node/.ssh
+    if [ ! -f /home/node/.ssh/id_rsa.pub ]; then
+	ssh-keygen -t rsa -f /home/node/.ssh/id_rsa -P "" -q
+    fi
     mkdir -p /var/www/volumes
+    chown node /var/www/volumes
+    
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

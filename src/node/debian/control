@@ -10,6 +10,6 @@ Homepage: <insert the upstream URL, if relevant>
 
 Package: node-encoding
 Architecture: all
-Depends: ${misc:Depends}, ffmpeg, python
+Depends: ${misc:Depends}, ffmpeg, python, openssh-server
 Description: <insert up to 60 chars description>
  <insert long description, indented with spaces>
