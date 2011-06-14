@@ -11,8 +11,8 @@ def main():
    vol=volume(sys.argv[1])
    if vol.type<>"www": return xmlmsg("error","Disk "+sys.argv[1]+" is of unknown type")
    (ok,errmsg)=vol.mount()
-   if ok==False: return xmlmsg("error",errmsg)
-   else: return xmlmsg("result",errmsg)
+   if ok==False: return xmlmsg("error",str(errmsg))
+   else: return xmlmsg("result",str(errmsg))
    
    
  

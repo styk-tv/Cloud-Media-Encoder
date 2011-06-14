@@ -32,7 +32,7 @@ class tools:
  
   @staticmethod
   def getId(dev):
-    lines=check_output(["/sbin/blkid","-o","export",dev],env={"LC_ALL" : "C"} )[1].splitlines()
+    lines=check_output(["/sbin/blkid","-o","udev",dev],env={"LC_ALL" : "C"} )[1].splitlines()
     ret={}
     for line in lines:
       (k,s,v)=line.partition("=")
