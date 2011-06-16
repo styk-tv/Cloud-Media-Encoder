@@ -1,0 +1,14 @@
+<encoders>
+<!-- Quicktime -->
+        <encoder type="ffmpeg" version="2.15" width="800" height="600" vcodec="libx264" acodec="aac" bitrate="2000k"
+	    audiobitrate="128k" fps="25" extraparams="-threads 0" guid="8A5D25EB9D234C9992062C08823BD9F5" outputType="mov"  />
+<!-- MS -->
+        <encoder type="ffmpeg" version="2.15" width="800" height="600" vcodec="wmv2" acodec="wmav2" bitrate="2000k"
+	    audiobitrate="128k" fps="25" extraparams="-threads 0" guid="8A5D25EB9D234C9992062C08823BD9F6" outputType="wmv"  />
+<!-- Flash -->
+        <encoder type="ffmpeg" version="2.15" width="800" height="600" vcodec="flv" acodec="libmp3lame" bitrate="2000k"
+	    audiobitrate="128k" fps="25" extraparams="-threads 0" guid="8A5D25EB9D234C9992062C08823BD9F7" outputType="flv"  />
+<!-- iPhone -->
+        <encoder type="ffmpeg" version="2.15" width="480" height="320" vcodec="libx264" acodec="aac" bitrate="1000k"
+	    audiobitrate="64k" fps="25" extraparams="-threads 0 -strict experimental -vpre fast" guid="8A5D25EB9D234C9992062C08823BD9F8" outputType="mp4"  />
+</encoders>
