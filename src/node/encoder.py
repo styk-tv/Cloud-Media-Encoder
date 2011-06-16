@@ -62,8 +62,8 @@ class FFmpegHandler:
     #    this.env={"FFMPEG_DATADIR" : presetsdir}
         this.frames=frames
         this.commonargs=["ffmpeg", "-y", "-i", localfile]
-        if len(eparams.extraparams)>0: this.commonargs+=eparams.extraparams.split(" ")
         this.commonargs+=[ "-vcodec", this.eparams.vcodec]
+        if len(eparams.extraparams)>0: this.commonargs+=eparams.extraparams.split(" ")
         if this.eparams.fps>0: this.commonargs+=["-r", this.eparams.fps]
         if this.eparams.width>0 and this.eparams.height>0: this.commonargs+=["-s", this.eparams.width+"x"+this.eparams.height]
         this.commonargs+=[ "-b", this.eparams.bitrate]
@@ -123,4 +123,4 @@ def main():
   queue.run()
 
 with daemon.DaemonContext():
-    main()
+  main()
