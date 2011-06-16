@@ -6,6 +6,7 @@ from shutil import rmtree
 import os
 import re
 import subprocess
+import daemon
 
 
 
@@ -121,6 +122,5 @@ def main():
   queue=Queue(jman)
   queue.run()
 
-  
-
-main()
+with daemon.DaemonContext():
+    main()
