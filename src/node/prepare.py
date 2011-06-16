@@ -12,7 +12,10 @@ def main():
    if vol.type<>"empty": return xmlmsg("error","Disk "+sys.argv[1]+" is not empty")
    (ok,errmsg)=vol.prepare(sys.argv[2].upper())
    if ok==False: return xmlmsg("error",errmsg)
-   else: return xmlmsg("result",errmsg)
+   else:
+         (ok,errmsg2)=vol.mount()
+         if ok==False: return xmlmsg("error",errmsg2)
+         return xmlmsg("result",errmsg)
    
  
  

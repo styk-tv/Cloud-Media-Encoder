@@ -7,4 +7,5 @@ ln -s $SRCDIR/nodetools/testconfig.py $SRCDIR/nodetools/config.py
 rm queue/Queue.xml
 cp queue/Queue.xml.bak queue/Queue.xml
 
-python $SRCDIR/encoder.py
+#python $SRCDIR/encoder.py
+python $SRCDIR/getprogress.py

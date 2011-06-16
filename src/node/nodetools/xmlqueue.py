@@ -45,6 +45,9 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
       wflow=XMLWorkflow(wfnode)
       if wflow.isSourceReady(): return wflow  
     return None
+  def load(self):
+    with open(self.target, "r") as f: doc=parse(f)
+    return doc
   def getProgressReporter(self):
       return self
   def _getWorkflowElement(self, workflow):
