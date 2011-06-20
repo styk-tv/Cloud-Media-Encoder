@@ -6,7 +6,8 @@ from shutil import rmtree
 import os
 import re
 import subprocess
-
+import daemon
+import sys
 
 
 
@@ -61,8 +62,8 @@ class FFmpegHandler:
     #    this.env={"FFMPEG_DATADIR" : presetsdir}
         this.frames=frames
         this.commonargs=["ffmpeg", "-y", "-i", localfile]
-        if len(eparams.extraparams)>0: this.commonargs+=eparams.extraparams.split(" ")
         this.commonargs+=[ "-vcodec", this.eparams.vcodec]
+        if len(eparams.extraparams)>0: this.commonargs+=eparams.extraparams.split(" ")
         if this.eparams.fps>0: this.commonargs+=["-r", this.eparams.fps]
         if this.eparams.width>0 and this.eparams.height>0: this.commonargs+=["-s", this.eparams.width+"x"+this.eparams.height]
         this.commonargs+=[ "-b", this.eparams.bitrate]
@@ -70,15 +71,15 @@ class FFmpegHandler:
         xargs=this.commonargs[:]
         xargs+=["-acodec", this.eparams.acodec, "-ac","2","-ar", "44100", "-ab",this.eparams.audiobitrate,  this.outfile]
         print "Starting second pass", xargs
-        ff=subprocess.Popen(args=xargs, executable="ffmpeg",   stderr=subprocess.PIPE)
-        this.process(ff)
+        ff=subprocess.Popen(args=xargs, executable="ffmpeg" )#,   stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+#        this.process(ff)
         ret=ff.wait()
         if ret!=0:
             raise Exception("FFMpeg could not process the file");
     def process(this,ff):
         buf=""
         while True:
-            l=ff.stderr.read(32)
+            l=ff.stdout.read(32)
             if len(l)==0: break
             buf+=l
             print l
@@ -100,6 +101,7 @@ class EncoderExecutor(AbstractTaskExecutor):
         super(EncoderExecutor, self).__init__(reporter, workflow, task)
         elist=EncodersList()
         self.eparams=elist.getByUuid(task.attributes["encoder"]) 
+        if self.eparams==None: raise Exception("No encoder with guid "+task.attributes["encoder"])
         if self.eparams.type<>"ffmpeg": raise Exception("Unknown encoder type "+self.eparams.type)
         slist=LocalStoreList()
         
@@ -121,6 +123,7 @@ def main():
   queue=Queue(jman)
   queue.run()
 
-  
-
-main()
+if len(sys.argv)>1 and sys.argv[1]=="-d": main()
+else: 
+    with daemon.DaemonContext():
+	main()

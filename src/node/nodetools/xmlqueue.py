@@ -70,6 +70,7 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
       wfnode.setAttribute('status', str(status))
       wfnode.setAttribute("progress", str(progress))
       dstart=wfnode.getAttribute("dateStart")
+      if status==ST_ERROR: wfnode.setAttribute("errorMessage",str(message))
       if len(dstart)==0: wfnode.setAttribute("dateStart",  datetime.now().ctime())
       if status==ST_PENDING or status==ST_FINISHED: wfnode.setAttribute("dateCompleted", datetime.now().ctime())
       with open(self.target, "w") as f: doc.writexml(f)

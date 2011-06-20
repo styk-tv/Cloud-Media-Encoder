@@ -12,7 +12,7 @@ class EncoderParams:
     self.type=element.getAttribute("type")
     self.extraparams=getAttributeDef(element, "extraparams", "")
     self.width=getAttributeDef(element, "width", 0)
-    self.height=getAttributeDef(element, "width", 0)
+    self.height=getAttributeDef(element, "height", 0)
     self.bitrate=getAttributeDef(element, "bitrate", 1000000)
     self.fps=getAttributeDef(element, "fps",0)
     self.audiobitrate=getAttributeDef(element, "audiobitrate", 64000)
