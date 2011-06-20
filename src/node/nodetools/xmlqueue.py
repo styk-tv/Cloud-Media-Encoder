@@ -1,6 +1,6 @@
 from xml.dom.minidom import getDOMImplementation,parse
 from queue import *
-from storelist import StoreList
+from localstores import LocalStoreList
 from config import Config
 from datetime import datetime
 import os
@@ -14,7 +14,7 @@ class XMLTask(Task):
       
   def isSourceReady(self):
     if self.attributes.has_key("srcStore") and self.attributes.has_key("srcAssetItem"):
-      slist=StoreList()
+      slist=LocalStoreList()
       store=slist.getByUuid(self.attributes["srcStore"])
       if store==None: return False
       path=store.findAsset(self.attributes["srcAssetItem"])

@@ -12,7 +12,8 @@ def xmlmsg(node,msg,rc=1):
 
 
 try:
-    workflow=parse(sys.stdin)
+    if len(sys.argv<2): raise Exception("Usage: addworkflow.py <workflow>")
+    workflow=parse(sys.argv[1])
     if workflow.documentElement.tagName<>"workflow": raise Exception("Root tag should be workflow")
     guid=workflow.documentElement.getAttribute("guid")
     doc=parse(open(Config.QUEUEDIR+"/Queue.xml","r"))

@@ -4,3 +4,4 @@ class Config:
     CONFIGDIR="./etc"
     QUEUEDIR="./queue"
     STORES_ROOT="./volumes"
+    NGINX_DIR="./nginx"

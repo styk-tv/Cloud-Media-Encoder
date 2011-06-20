@@ -1,7 +1,7 @@
 from nodetools.xmlqueue import XMLJobManager
 from nodetools.queue import AbstractTaskExecutor,Queue
 from nodetools.encoderlist import EncodersList
-from nodetools.storelist import StoreList
+from nodetools.localstores import LocalStoreList
 from shutil import rmtree
 import os
 import re
@@ -101,7 +101,7 @@ class EncoderExecutor(AbstractTaskExecutor):
         elist=EncodersList()
         self.eparams=elist.getByUuid(task.attributes["encoder"]) 
         if self.eparams.type<>"ffmpeg": raise Exception("Unknown encoder type "+self.eparams.type)
-        slist=StoreList()
+        slist=LocalStoreList()
         
         self.srcfile=slist.getByUuid(task.attributes["srcStore"]).findAssetFile(task.attributes["srcAssetItem"], task.attributes["srcAssetItemType"])
         targetdir=slist.getByUuid(task.attributes["destStore"]).findAsset(task.attributes["srcAssetItem"])
