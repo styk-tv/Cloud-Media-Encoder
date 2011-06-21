@@ -9,12 +9,11 @@
       destStore="store2"
 	/>
 
-   <task guid="task2" action="ENCODE"
-      srcStore="store1"
+   <task guid="task2" action="MOVE"
+      srcStore="store2"
       srcAssetItem="asset1"
-      srcAssetItemType="ts"
-      encoder="mp4encoder"
-      destStore="store2"
+      destStore="store1"
+      destAssetItem="asset1x"
 	/>
       </workflow>
          </queue>
