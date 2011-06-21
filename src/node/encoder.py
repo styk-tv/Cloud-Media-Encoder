@@ -1,7 +1,8 @@
 from nodetools.xmlqueue import XMLJobManager
-from nodetools.queue import AbstractTaskExecutor,Queue
+from nodetools.queue import AbstractTaskExecutor,Queue, ST_WORKING
 from nodetools.encoderlist import EncodersList
 from nodetools.localstores import LocalStoreList
+from nodetools.move import MoveExecutor
 from shutil import rmtree
 import os
 import re
@@ -49,14 +50,15 @@ class FileInfo:
         return float(line[start+1:end])
 
     def computeFrames(this):
-        return this.fps*this.duration
+        return int(this.fps*this.duration)
         
     def __str__(this):
         return "V: "+str(this.width)+"x"+str(this.height)+" "+str(this.duration)+"s at "+str(this.fps)+" - "+str(this.frames)+" frames"
 
 class FFmpegHandler:
-    def __init__(this, eparams ,  localfile,  outfile, frames):
+    def __init__(this, eparams ,  localfile,  outfile, frames, progressCb):
         this.eparams=eparams
+        this.progressCb=progressCb
         this.infile=localfile
         this.outfile=outfile
     #    this.env={"FFMPEG_DATADIR" : presetsdir}
@@ -88,13 +90,7 @@ class FFmpegHandler:
                 ret=buf[:i-1]
                 buf=buf[i+1:]
                 if not ret.startswith("frame=") or this.frames==0: continue
-    #            this.onProgress(int(ret[6:11].strip())/this.frames*100.0)
-
-
-class PrintExecutor(AbstractTaskExecutor):
-  def run(self):
-    print "AAA"
-    print self.task.attributes["MESSAGE"]
+                this.progressCb(int(ret[6:11].strip()))
 
 class EncoderExecutor(AbstractTaskExecutor):
     def __init__(self,reporter, workflow,task):
@@ -104,22 +100,29 @@ class EncoderExecutor(AbstractTaskExecutor):
         if self.eparams==None: raise Exception("No encoder with guid "+task.attributes["encoder"])
         if self.eparams.type<>"ffmpeg": raise Exception("Unknown encoder type "+self.eparams.type)
         slist=LocalStoreList()
+        self.frames=1
         
         self.srcfile=slist.getByUuid(task.attributes["srcStore"]).findAssetFile(task.attributes["srcAssetItem"], task.attributes["srcAssetItemType"])
         targetdir=slist.getByUuid(task.attributes["destStore"]).findAsset(task.attributes["srcAssetItem"])
         if not os.path.exists(targetdir): os.makedirs(targetdir)
         self.outfile=slist.getByUuid(task.attributes["destStore"]).findAssetFile(task.attributes["srcAssetItem"], self.eparams.outputtype)
         
+    def progressCb(self, progress):
+        self.reporter.setQueueProperty(self.workflow, self.task, "frame", str(progress))
+        self.reporter.setQueueProperty(self.workflow, self.task, "progress", str(progress*100.0/self.frames))
     def run(self):
         fi=FileInfo(self.srcfile)
+        self.frames=fi.frames
+        self.reporter.setQueueProperty(self.workflow, self.task, "all_frames", str(fi.frames))
+        
         #FIXME: progress!
-        fmpg=FFmpegHandler(self.eparams,   self.srcfile, self.outfile,  fi.frames)
+        fmpg=FFmpegHandler(self.eparams,   self.srcfile, self.outfile,  fi.frames, self.progressCb)
         fmpg.run()
         
 def main():
   jman=XMLJobManager()
-  jman.registerExecutor("PRINT",PrintExecutor)
   jman.registerExecutor("ENCODE",  EncoderExecutor)
+  jman.registerExecutor("MOVE", MoveExecutor)
   queue=Queue(jman)
   queue.run()
 

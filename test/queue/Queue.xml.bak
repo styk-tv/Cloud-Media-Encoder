@@ -8,5 +8,13 @@
       encoder="mp4encoder"
       destStore="store2"
 	/>
+
+   <task guid="task2" action="ENCODE"
+      srcStore="store1"
+      srcAssetItem="asset1"
+      srcAssetItemType="ts"
+      encoder="mp4encoder"
+      destStore="store2"
+	/>
       </workflow>
          </queue>

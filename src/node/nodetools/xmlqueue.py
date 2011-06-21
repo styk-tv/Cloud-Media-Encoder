@@ -56,6 +56,11 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
       guid=wfnode.getAttribute("guid")
       if guid==workflow.id:  return (doc, wfnode)
     return (doc, None)
+  def _getTaskElement(self, workflow, task):
+    for wfnode in workflow.getElementsByTagName("task"):
+      guid=wfnode.getAttribute("guid")
+      if guid==task.id: return wfnode
+    return None
   def releaseWorkflow(self,workflow):
       pass
 #    (doc, wfnode)=self._getWorkflowElement(workflow)
@@ -65,8 +70,15 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
        # return
   def setCurrent(self,workflow, task):
       pass
+  def setQueueProperty(self, workflow, task, property, value):
+      (doc, wfnode)=self._getWorkflowElement(workflow)
+      if task<>None: wfnode=self._getTaskElement(wfnode, task)
+      wfnode.setAttribute(property, value)
+      with open(self.target, "w") as f: doc.writexml(f)
+      
   def  setStatus(self, status,progress,message, workflow, task=None):
       (doc, wfnode)=self._getWorkflowElement(workflow)
+      if task<>None: wfnode=self._getTaskElement(wfnode, task)
       wfnode.setAttribute('status', str(status))
       wfnode.setAttribute("progress", str(progress))
       dstart=wfnode.getAttribute("dateStart")

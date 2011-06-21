@@ -21,6 +21,8 @@ ST_PENDING,ST_WORKING,ST_FINISHED,ST_ERROR=range(4)
 class AbstractProgressReporter(object):
   def setStatus(self,status,progress,message, workflow,task=None):
     pass
+  def setQueueProperty(self, workflow, task, property, value):
+    pass
   def setCurrent(self, workflow,jdesc):
     pass
 
@@ -75,14 +77,15 @@ class Queue:
         executor.run()
         logging.info("Finished task "+task.id)
         self.reporter.setStatus(ST_FINISHED,100,"FINISHED",workflow,task)
-#	i=i+1
-#       self.reporter.setStatus(ST_WORKING,i/len(workflow.tasks),"WORKING",workflow)
+        i=i+1
+        self.reporter.setStatus(ST_WORKING,100.0*i/len(workflow.tasks),"WORKING",workflow)
       except Exception,e:
         self.reporter.setStatus(ST_ERROR,100,e,workflow,task)
+        self.reporter.setStatus(ST_ERROR,100,e,workflow)
         logging.exception("Error during workflow "+workflow.id+" task "+task.id)
         self.jman.releaseWorkflow(workflow)
         return
-    self.reporter.setStatus(ST_FINISHED,100,"FINISHED",workflow,task)
+    self.reporter.setStatus(ST_FINISHED,100,"FINISHED",workflow)
     self.jman.releaseWorkflow(workflow)
       
   

@@ -1,19 +1,9 @@
 from xml.dom.minidom import getDOMImplementation,parse
-from nodetools.config import Config
+from nodetools.config import Config, xmlmsg
 import sys
 
-def xmlmsg(node,msg,rc=1):
-    impl=getDOMImplementation()
-    doc=impl.createDocument(None, node, None)
-    doc.documentElement.appendChild(doc.createTextNode(msg))
-    doc.writexml(sys.stdout)
-    doc.unlink()
-    return rc
-
-
 try:
-    if len(sys.argv<2): raise Exception("Usage: addworkflow.py <workflow>")
-    workflow=parse(sys.argv[1])
+    workflow=parse(sys.stdin)
     if workflow.documentElement.tagName<>"workflow": raise Exception("Root tag should be workflow")
     guid=workflow.documentElement.getAttribute("guid")
     doc=parse(open(Config.QUEUEDIR+"/Queue.xml","r"))
