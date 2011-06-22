@@ -1,6 +1,7 @@
 import subprocess
 from xml.dom.minidom import getDOMImplementation
 import sys
+import os
 
 def check_output(*popenargs, **kwargs):
     process = subprocess.Popen(stdout=subprocess.PIPE, stderr=subprocess.PIPE, *popenargs, **kwargs)
@@ -30,6 +31,13 @@ class tools:
     (code,ret,err)=check_output(["/sbin/fdisk","-lu",dev],env={ "LC_ALL" : "C"} )
     return ret.find("Device Boot")>-1
  
+  @staticmethod
+  def rescanScsi():
+     for ifile in os.listdir("/sys/class/scsi_host"):
+            srcfile=os.path.join("/sys/class/scsi_host", ifile)
+            if not os.path.isdir(srcfile): continue
+            with open(srcfile+"/scan", "w") as f: f.write("- - -\n")
+            
   @staticmethod
   def getId(dev):
     lines=check_output(["/sbin/blkid","-o","udev",dev],env={"LC_ALL" : "C"} )[1].splitlines()

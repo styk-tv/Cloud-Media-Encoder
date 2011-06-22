@@ -35,8 +35,9 @@ class EncryptExecutor(AbstractTaskExecutor):
             output.write(cipher.update(data))
             
     def _makeCipher(self):
-        k=b64decode(self.task.attributes["key"])
-        iv=b64decode("AAAAAAAAAAAAAAAAAAAAAA==")
+#        k=b64decode(self.task.attributes["key"])
+        iv='\0'*16
+        k='\x00'*16
         print k, iv
-        return Cipher(alg="aes_128_cbc", key=k, iv=iv, op=1)
+        return Cipher(alg="aes_128_cbc", key=k, iv=iv, op=1, salt=None)
     

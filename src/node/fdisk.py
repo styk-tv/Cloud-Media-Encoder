@@ -5,6 +5,7 @@ from xml.dom.minidom import getDOMImplementation
 import sys
 from nodetools.tools import tools
 from nodetools.volume import volume
+from time import sleep
 
 class partition:
   partre=re.compile("([^\s]+)\s([^\d]*)(\d+)[\s]*(\d+)[\s]*([\d]+\+?)[\s]*(\d+)[\s]*(.*)")
@@ -95,6 +96,8 @@ class volumelist:
     
 
 def main():
+   tools.rescanScsi()
+   sleep(2)
    out=volumelist()
    out.write(sys.stdout)
  
