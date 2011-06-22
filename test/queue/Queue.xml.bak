@@ -1,14 +1,15 @@
 <?xml version="1.0" ?><queue dateCompleted="" dateCreated="" dateStart="" destination="192.168.1.211" guid="78D6012F21264C50802247930B8DBE9D" queue_version="0.1">
 
  <workflow guid="workflow1">
-<!--   <task guid="task1" action="ENCODE"
+   <task guid="task1" action="ENCODE"
       srcStore="store1"
       srcAssetItem="asset1"
       srcAssetItemType="ts"
       encoder="mp4encoder"
       destStore="store2"
 	/> 
--->
+
+
    <task guid="task2" action="ENCRYPT"
       srcStore="store1"
       srcAssetItem="asset1"
