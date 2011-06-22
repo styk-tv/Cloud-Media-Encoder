@@ -4,6 +4,7 @@ from nodetools.encoderlist import EncodersList
 from nodetools.localstores import LocalStoreList
 from nodetools.storelist import StoreList
 from shutil import move
+from os import rename
 import paramiko
 
 class MoveExecutor(AbstractTaskExecutor):
@@ -25,5 +26,5 @@ class MoveExecutor(AbstractTaskExecutor):
     def localRun(self):
         self.destdir=self.targetstore.findAsset(self.task.attributes["destAssetItem"])
         move(self.srcasset,self.destdir+".tmp")
-        move(self.destdir+".tmp",self.destdir)
+        rename(self.destdir+".tmp",self.destdir)
         

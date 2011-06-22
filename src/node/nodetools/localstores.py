@@ -9,7 +9,7 @@ from shutil import rmtree
 class Store:
   def __init__(self,element):
     self.type=element.getAttribute("type")
-    self.uuid=element.getAttribute("uuid")
+    self.uuid=element.getAttribute("guid")
     self.diskuuid=element.getAttribute("disk")
     self.path=self._findPath()
     self.vhost=element.getAttribute("vhost")
@@ -52,7 +52,7 @@ class LocalStoreList:
     uuid=uuid4().get_hex()
     os.mkdir(Config.STORES_ROOT+"/"+disk+"/"+uuid)
     element=self.doc.createElement("store")
-    element.setAttribute("uuid",uuid)
+    element.setAttribute("guid",uuid)
     element.setAttribute("disk",disk)
     element.setAttribute("type",type)
     self.doc.documentElement.appendChild(element)

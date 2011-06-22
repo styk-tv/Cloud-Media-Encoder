@@ -1,7 +1,6 @@
-<?xml version="1.0" ?>
-<stores>
-          <store disk="disk1" uuid="store1" type="EI" />
-          <store disk="disk1" uuid="store2" type="EO" /> 
+<?xml version="1.0" ?><stores>
+          <store disk="disk1" guid="store1" type="EI"/>
+          <store disk="disk1" guid="store2" type="EO"/> 
 
 
 </stores>

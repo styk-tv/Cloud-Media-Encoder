@@ -3,6 +3,7 @@ from nodetools.queue import AbstractTaskExecutor,Queue, ST_WORKING
 from nodetools.encoderlist import EncodersList
 from nodetools.localstores import LocalStoreList
 from nodetools.move import MoveExecutor
+from nodetools.drm import EncryptExecutor
 from shutil import rmtree
 import os
 import re
@@ -123,6 +124,7 @@ def main():
   jman=XMLJobManager()
   jman.registerExecutor("ENCODE",  EncoderExecutor)
   jman.registerExecutor("MOVE", MoveExecutor)
+  jman.registerExecutor("ENCRYPT", EncryptExecutor)
   queue=Queue(jman)
   queue.run()
 

@@ -33,6 +33,8 @@ class AbstractTaskExecutor(object):
     self.reporter=reporter
   def run(self):
     pass
+  def updateProgress(self, progress):
+    self.reporter.setStatus(ST_WORKING, progress, "Working", self.workflow, self.task)
     
 class WorkflowManager(object):
   def __init__(self):

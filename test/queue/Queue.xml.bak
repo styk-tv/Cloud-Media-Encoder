@@ -7,13 +7,14 @@
       srcAssetItemType="ts"
       encoder="mp4encoder"
       destStore="store2"
-	/>
+	/> 
 
-   <task guid="task2" action="MOVE"
-      srcStore="store2"
+   <task guid="task2" action="ENCRYPT"
+      srcStore="store1"
       srcAssetItem="asset1"
       destStore="store1"
       destAssetItem="asset1x"
+      key="AAAAAAAAAAAAAAAAAAAAAA=="
 	/>
       </workflow>
          </queue>
