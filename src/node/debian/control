@@ -10,6 +10,6 @@ Homepage: <insert the upstream URL, if relevant>
 
 Package: node-encoding
 Architecture: all
-Depends: ${misc:Depends}, ffmpeg (>= 5:0.6.1), python, openssh-server, python-daemon, python-psutil, python-paramiko
+Depends: ${misc:Depends}, ffmpeg (>= 5:0.6.1), python, openssh-server, python-daemon, python-psutil, python-paramiko, python-m2crypto
 Description: <insert up to 60 chars description>
  <insert long description, indented with spaces>
