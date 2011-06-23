@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 from nodetools.xmlqueue import XMLJobManager
 from nodetools.tools import xmlmsg
 import sys

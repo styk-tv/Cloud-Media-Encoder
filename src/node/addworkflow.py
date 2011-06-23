@@ -1,3 +1,6 @@
+#!/usr/bin/python
+
+
 from xml.dom.minidom import getDOMImplementation,parse
 from nodetools.config import Config, xmlmsg
 import sys

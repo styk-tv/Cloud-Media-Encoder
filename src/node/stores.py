@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 from nodetools.tools import xmlmsg
 from nodetools.localstores import LocalStoreList
 import sys

@@ -1,3 +1,6 @@
+#!/usr/bin/python
+
+
 import psutil
 from xml.dom.minidom import getDOMImplementation
 from nodetools.xmlqueue import XMLJobManager
