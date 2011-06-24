@@ -4,12 +4,13 @@ Priority: extra
 Maintainer: Jakub Stachowski <jakub.stachowski@digisign.pl>
 Build-Depends: debhelper (>= 7.0.50~)
 Standards-Version: 3.8.4
-Homepage: <insert the upstream URL, if relevant>
-#Vcs-Git: git://git.debian.org/collab-maint/node-encoding.git
-#Vcs-Browser: http://git.debian.org/?p=collab-maint/node-encoding.git;a=summary
+Homepage: http://wiki.styk.tv/index.php/Main_Page
 
 Package: node-encoding
 Architecture: all
-Depends: ${misc:Depends}, ffmpeg (>= 5:0.6.1), python, openssh-server, python-daemon, python-psutil, python-paramiko, python-m2crypto
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
+Depends: ${misc:Depends}, ffmpeg (>= 5:0.6.1), python, openssh-server, python-daemon, python-psutil, python-paramiko, python-m2crypto, nginx
+Description: Styk.Tv API
+ Styk.tv API is an Open Source software agent for processing and publishing of stock footage video assets. 
+ Easy to set up virtual machines (nodes) can perform tasks assigned to them and provide a solid base for 
+ your asset distribution and monetization activities. Our primary focus is on scalability to allow for fast 
+ expansion of required resources like disk space, fast network connection ,processing power and high availability. 
