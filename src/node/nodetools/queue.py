@@ -73,6 +73,7 @@ class WorkflowManager(object):
   def registerExecutor(self,action,cls):
     assert(issubclass(cls,AbstractTaskExecutor))
     self.executors[action]=cls
+    print 'Registered executor '+action
   
   
 class Queue:

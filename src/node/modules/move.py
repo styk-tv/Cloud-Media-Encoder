@@ -48,3 +48,6 @@ class MoveExecutor(AbstractTaskExecutor):
         move(self.srcasset,self.destdir+".tmp")
         rename(self.destdir+".tmp",self.destdir)
         
+
+def pluginInfo():
+    return "MOVE", MoveExecutor

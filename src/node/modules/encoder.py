@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 ##
 ## This file is part of the Styk.TV API project.
 ##
@@ -24,8 +22,6 @@ from nodetools.xmlqueue import XMLJobManager
 from nodetools.queue import AbstractTaskExecutor,Queue, ST_WORKING
 from nodetools.encoderlist import EncodersList
 from nodetools.localstores import LocalStoreList
-from nodetools.move import MoveExecutor
-from nodetools.drm import EncryptExecutor
 from shutil import rmtree
 import os
 import re
@@ -115,7 +111,10 @@ class FFmpegHandler:
                 if not ret.startswith("frame=") or this.frames==0: continue
                 this.progressCb(int(ret[6:11].strip()))
 
+
+
 class EncoderExecutor(AbstractTaskExecutor):
+    action="ENCODE"
     def __init__(self,reporter, workflow,task):
         super(EncoderExecutor, self).__init__(reporter, workflow, task)
         elist=EncodersList()
@@ -142,15 +141,5 @@ class EncoderExecutor(AbstractTaskExecutor):
         fmpg=FFmpegHandler(self.eparams,   self.srcfile, self.outfile,  fi.frames, self.progressCb)
         fmpg.run()
         
-def main():
-  jman=XMLJobManager()
-  jman.registerExecutor("ENCODE",  EncoderExecutor)
-  jman.registerExecutor("MOVE", MoveExecutor)
-  jman.registerExecutor("ENCRYPT", EncryptExecutor)
-  queue=Queue(jman)
-  queue.run()
-
-if len(sys.argv)>1 and sys.argv[1]=="-d": main()
-else: 
-    with daemon.DaemonContext():
-	main()
+def pluginInfo():
+    return "ENCODE", EncoderExecutor

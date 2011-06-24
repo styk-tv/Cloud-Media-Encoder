@@ -61,3 +61,5 @@ class EncryptExecutor(AbstractTaskExecutor):
         print k, iv
         return Cipher(alg="aes_128_cbc", key=k, iv=iv, op=1, salt=None)
     
+def pluginInfo():
+    return "ENCRYPT", EncryptExecutor

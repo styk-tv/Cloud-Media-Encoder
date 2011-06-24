@@ -18,7 +18,7 @@ PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC=node-encoding             # Introduce a short description here
 NAME=node-encoding             # Introduce the short server's name here
 DAEMON=/usr/bin/python # Introduce the server's location here
-DAEMON_ARGS="/opt/node/encoder.py"             # Arguments to run the daemon with
+DAEMON_ARGS="/opt/node/node.py"             # Arguments to run the daemon with
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 

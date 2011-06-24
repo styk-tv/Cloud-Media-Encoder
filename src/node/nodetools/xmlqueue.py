@@ -20,10 +20,12 @@
 
 from xml.dom.minidom import getDOMImplementation,parse
 from queue import *
+import pkgutil
 from localstores import LocalStoreList
 from config import Config
 from datetime import datetime
 import os
+import modules
 
 class XMLTask(Task):
   def __init__(self,element):
@@ -107,3 +109,15 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
       if status==ST_PENDING or status==ST_FINISHED: wfnode.setAttribute("dateCompleted", datetime.now().ctime())
       with open(self.target, "w") as f: doc.writexml(f)
       
+  def registerPlugins(self):
+      path="/".join(modules.__file__.split("/")[:-1])
+      for name in os.listdir(path):
+            if name.endswith(".py") and not name.startswith("__"):
+                modulename = name.rsplit('.', 1)[0]
+                self.registerPlugin(modulename)
+  def registerPlugin(self, modulename):
+      mainmod=__import__("modules."+modulename)
+      submod=mainmod.__dict__[modulename]
+      (action, cls)=submod.pluginInfo()
+      self.registerExecutor(action, cls)
+    
