@@ -20,7 +20,8 @@
 
 
 from xml.dom.minidom import getDOMImplementation,parse
-from nodetools.config import Config, xmlmsg
+from nodetools.config import Config
+from nodetools.tools import xmlmsg
 import sys
 
 try:
