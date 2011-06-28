@@ -31,7 +31,7 @@ class volume:
     self.setup(tools.hasPartitions(device))
   def probe(self):
     self.data=tools.getId(self.device)
-    if "ID_FS_UUID" in self.data: self.uuid=self.data["ID_FS_UUID"]
+    if "ID_FS_UUID" in self.data: self.uuid=self.data["ID_FS_UUID"].replace("-", "")
     else: self.uuid=None
     
   def setup(self,hasPartitions):
@@ -47,7 +47,7 @@ class volume:
       msg=self.uuid
     return (ret==0,msg)
   def mount(self):
-    target=MOUNTROOT+"/"+self.data["ID_FS_UUID"]
+    target=MOUNTROOT+"/"+self.data["ID_FS_UUID"].replace("-", "")
     try:
       if not os.path.exists(target): os.makedirs(target)
     except OSError, e:
