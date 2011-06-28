@@ -24,7 +24,8 @@ from nodetools.encoderlist import EncodersList
 from nodetools.localstores import LocalStoreList
 from nodetools.storelist import StoreList
 from shutil import move
-from os import rename
+from os import rename, makedirs
+from os.path import dirname, exists
 import paramiko
 
 class MoveExecutor(AbstractTaskExecutor):
@@ -45,6 +46,7 @@ class MoveExecutor(AbstractTaskExecutor):
         else: raise Exception("Remote move not implemented")
     def localRun(self):
         self.destdir=self.targetstore.findAsset(self.task.attributes["destAssetItem"])
+        if not exists(dirname(self.destdir)): makedirs(dirname(self.destdir))
         move(self.srcasset,self.destdir+".tmp")
         rename(self.destdir+".tmp",self.destdir)
         

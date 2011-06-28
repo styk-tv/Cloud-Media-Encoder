@@ -42,7 +42,7 @@ class Store:
     
   # returns directory containing given asset
   def findAsset(self,assetId):
-    return self.path+"/"+assetId
+    return self.path+"/"+assetId[0]+"/"+assetId[1]+"/"+assetId
   
   # returns path to main asset file
   def findAssetFile(self,assetId,extension):
