@@ -3,7 +3,9 @@ default:
 install:
 	cp *.py ${DESTDIR}/opt/node
 	mkdir ${DESTDIR}/opt/node/nodetools
+	mkdir ${DESTDIR}/opt/node/modules
 	cp nodetools/*.py ${DESTDIR}/opt/node/nodetools
+	cp modules/*.py ${DESTDIR}/opt/node/modules
 	mkdir ${DESTDIR}/opt/node/queue
 	mkdir ${DESTDIR}/opt/node/etc
 	cp extra/Encoders.xml ${DESTDIR}/opt/node/etc

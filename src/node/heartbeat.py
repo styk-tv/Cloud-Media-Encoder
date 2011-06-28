@@ -49,11 +49,12 @@ def printStatus(out):
     mem.setAttribute("avail_virtual", str(psutil.avail_virtmem()))
     doc.documentElement.appendChild(mem)
     cpu=doc.createElement("cpu")
-    cpu.setAttribute("usage", str(psutil.cpu_percent(1)))
+    cpu.setAttribute("usage", str(psutil.cpu_percent()))
     doc.documentElement.appendChild(cpu)
     doc.writexml(out)
 
 def main():
+    sleep(2)
     while True:
         printStatus(sys.stdout)
         sys.stdout.write("\n")
