@@ -40,7 +40,6 @@ def main():
             return xmlmsg("result", ret)
         else: raise Exception("Usage: encoders.py <types>|<list>|<create>|<remove>")
     except Exception, e:
-        raise 
         return xmlmsg("error", str(e))
         
 main()
