@@ -21,6 +21,7 @@
 from xml.dom.minidom import getDOMImplementation, parse
 from config import Config
 import os
+from uuid import uuid4
 
 def getAttributeDef(element, name, default):
     if element.hasAttribute(name): return element.getAttribute(name)
@@ -29,6 +30,7 @@ def getAttributeDef(element, name, default):
 class EncoderParams:
   def __init__(self,element):
     self.id=element.getAttribute("guid")
+    self.element=element
     self.type=element.getAttribute("type")
     self.extraparams=getAttributeDef(element, "extraparams", "")
     self.width=getAttributeDef(element, "width", 0)
@@ -42,12 +44,46 @@ class EncoderParams:
     
 class EncodersList(object):
   def __init__(self, path=Config.CONFIGDIR+"/Encoders.xml"):
-    dom=parse(open(path,'r'))
+    if os.path.exists(path):
+        with open(path,'r') as f: self.doc=parse(f)
+    else: self.doc=getDOMImplementation().createDocument(None, "encoders", None)
+    self.target=path
     self.encoders={}
-    for elm in dom.getElementsByTagName("encoder"): 
+    for elm in self.doc.getElementsByTagName("encoder"): 
       encoder=EncoderParams(elm)
       self.encoders[encoder.id]=encoder
-      
+ 
+  def save(self):
+    with open(self.target, "w") as f: self.doc.writexml(f)
+ 
   def getByUuid(self,uuid):
     if self.encoders.has_key(uuid):  return self.encoders[uuid]
     else: return None
+
+  def write(self, out):
+      self.doc.writexml(out)
+
+  def remove(self, uuid):
+    store=self.getByUuid(uuid)
+    if store==None: raise Exception("Unknown encoder")
+    store.element.parentNode.removeChild(store.element)
+    self.save()
+    return "OK"
+
+  def create(self, indoc):
+    elm=parse(indoc).documentElement
+    if elm.nodeName<>"encoder": raise Exception("Wrong format")
+    if not elm.hasAttribute("guid"): elm.setAttribute("guid",  uuid4().get_hex())
+    ep=EncoderParams(elm)
+    if ep.type<>"ffmpeg_0612": raise Exception("Unknown encoder type")
+    self.doc.documentElement.appendChild(elm)
+    self.save()
+    return ep.id
+
+  def writeTypes(self, out):
+      doc=getDOMImplementation().createDocument(None, "EncoderTypes", None)
+      elm=doc.createElement("tencoderType");
+      elm.setAttribute("name", "ffmpeg_0612")
+      doc.documentElement.appendChild(elm)
+      doc.writexml(out)
+  
