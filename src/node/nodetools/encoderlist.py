@@ -33,14 +33,16 @@ class EncoderParams:
     self.element=element
     self.type=element.getAttribute("type")
     self.extraparams=getAttributeDef(element, "extraparams", "")
-    self.width=getAttributeDef(element, "width", 0)
-    self.height=getAttributeDef(element, "height", 0)
+    self.width=int(getAttributeDef(element, "width", 0))
+    self.height=int(getAttributeDef(element, "height", 0))
     self.bitrate=getAttributeDef(element, "bitrate", 1000000)
     self.fps=getAttributeDef(element, "fps",0)
     self.audiobitrate=getAttributeDef(element, "audiobitrate", 64000)
     self.vcodec=getAttributeDef(element, "vcodec", "libx264")
     self.acodec=getAttributeDef(element, "acodec", "aac")
     self.outputtype=getAttributeDef(element, "outputType", "mp4")
+    self.thumbsCount=int(getAttributeDef(element, "thCount", "0"))
+    self.thumbsInterval=int(getAttributeDef(element, "thInterval","0"))
     
 class EncodersList(object):
   def __init__(self, path=Config.CONFIGDIR+"/Encoders.xml"):
@@ -50,6 +52,9 @@ class EncodersList(object):
     self.target=path
     self.encoders={}
     for elm in self.doc.getElementsByTagName("encoder"): 
+      encoder=EncoderParams(elm)
+      self.encoders[encoder.id]=encoder
+    for elm in self.doc.getElementsByTagName("thumbs"): 
       encoder=EncoderParams(elm)
       self.encoders[encoder.id]=encoder
  

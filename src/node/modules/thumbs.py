@@ -22,7 +22,7 @@ from nodetools.xmlqueue import XMLJobManager
 from nodetools.queue import AbstractTaskExecutor,Queue, ST_WORKING
 from nodetools.encoderlist import EncodersList
 from nodetools.localstores import LocalStoreList
-from nodetools.ffmpeg import VideoFFmpegHandler, FileInfo
+from nodetools.ffmpeg import FFmpegHandler, FileInfo
 from shutil import rmtree
 import os
 import re
@@ -31,10 +31,16 @@ import daemon
 import sys
 
 
+class ThumbFFmpegHandler(FFmpegHandler):
+    def __init__(self, eparams ,  localfile,  outfile, frames, width, height, seek):
+        super(ThumbFFmpegHandler, self).__init__(eparams, localfile, outfile, frames, None)
+        self.commonargs+=["-ss", str(seek), "-s", str(width)+"x"+str(height), "-qscale","3","-vframes","1"]
+        if len(eparams.extraparams)>0: this.commonargs+=eparams.extraparams.split(" ")
 
-class EncoderExecutor(AbstractTaskExecutor):
+
+class ThumbsExecutor(AbstractTaskExecutor):
     def __init__(self,reporter, workflow,task):
-        super(EncoderExecutor, self).__init__(reporter, workflow, task)
+        super(ThumbsExecutor, self).__init__(reporter, workflow, task)
         elist=EncodersList()
         self.eparams=elist.getByUuid(task.attributes["encoder"]) 
         if self.eparams==None: raise Exception("No encoder with guid "+task.attributes["encoder"])
@@ -43,21 +49,38 @@ class EncoderExecutor(AbstractTaskExecutor):
         self.frames=1
         
         self.srcfile=slist.getByUuid(task.attributes["srcStore"]).findAssetFile(task.attributes["srcAssetItem"], task.attributes["srcAssetItemType"])
-        targetdir=slist.getByUuid(task.attributes["destStore"]).findAsset(task.attributes["srcAssetItem"])
-        if not os.path.exists(targetdir): os.makedirs(targetdir)
-        self.outfile=slist.getByUuid(task.attributes["destStore"]).findAssetFile(task.attributes["srcAssetItem"], self.eparams.outputtype)
+        self.targetdir=slist.getByUuid(task.attributes["destStore"]).findAsset(task.attributes["srcAssetItem"])
+        if not os.path.exists(self.targetdir): os.makedirs(self.targetdir)
         
     def progressCb(self, progress):
-        self.reporter.setQueueProperty(self.workflow, self.task, "frame", str(progress))
-        self.reporter.setQueueProperty(self.workflow, self.task, "progress", str(progress*100.0/self.frames))
+        pass
+    def computeSize(self, fi):
+        origratio=fi.aspect
+        w=self.eparams.width
+        h=self.eparams.height
+        newratio=float(w)/float(h)
+        if origratio<newratio: w=int(h*origratio)
+        else: h=int(w/origratio)
+        return (w, h)
+
+        
     def run(self):
         fi=FileInfo(self.srcfile)
         self.frames=fi.frames
-        self.reporter.setQueueProperty(self.workflow, self.task, "all_frames", str(fi.frames))
+        (w, h)=self.computeSize(fi)
         
-        #FIXME: progress!
-        fmpg=VideoFFmpegHandler(self.eparams,   self.srcfile, self.outfile,  fi.frames, self.progressCb)
-        fmpg.run()
+        nr=0
+        point=0.0
+        ival=self.eparams.thumbsInterval
+        if ival==0: ival=float(fi.duration+1.0)/self.eparams.thumbsCount
+        if ival==0: raise Exception("Wrong thumbs interval")
+        while True:
+            outfile=self.targetdir+"/th_"+self.task.attributes["srcAssetItem"]+"_"+str(nr)+"."+self.eparams.outputtype
+            fmpg=ThumbFFmpegHandler(self.eparams,   self.srcfile, outfile,  fi.frames, w, h, point)
+            fmpg.run()
+            point+=ival
+            nr+=1
+            if point>=fi.duration: break
         
 def pluginInfo():
-    return "ENCODE", EncoderExecutor
+    return "THUMBS", ThumbsExecutor
