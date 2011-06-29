@@ -66,8 +66,8 @@ class tools:
       ret[k]=v
     return ret
   @staticmethod
-  def makeFs(dev,type):
-    (retcode,output,err)=check_output(["/sbin/mkfs.ext4","-F",dev,"-L","TX-DATA-"+type],env={"LC_ALL" : "C"} )
+  def makeFs(dev):
+    (retcode,output,err)=check_output(["/sbin/mkfs.ext4","-F",dev,"-L","TX-DATA-NODE"],env={"LC_ALL" : "C"} )
     return (retcode,err)
   @staticmethod
   def mount(dev,path):
