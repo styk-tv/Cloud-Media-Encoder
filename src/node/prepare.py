@@ -27,9 +27,11 @@ from xml.dom.minidom import getDOMImplementation
 
 
 def main():
-   if len(sys.argv)<3: return xmlmsg("error","Usage: prepare.py <device> <type>. Example: prepare.py /dev/sdb www")
+   if len(sys.argv)<2: return xmlmsg("error","Usage: prepare.py <device> [-f]. Example: prepare.py /dev/sdb")
    vol=volume(sys.argv[1])
-   if vol.type<>"empty": return xmlmsg("error","Disk "+sys.argv[1]+" is not empty")
+   force=False
+   if len(sys.argv>2) and sys.argv[2]=="-f": force=True
+   if vol.type<>"empty" and not force: return xmlmsg("error","Disk "+sys.argv[1]+" is not empty")
    (ok,errmsg)=vol.prepare(sys.argv[2].upper())
    if ok==False: return xmlmsg("error",errmsg)
    else:

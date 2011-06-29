@@ -39,7 +39,7 @@ class volume:
     if hasPartitions: return
     if len(self.data)==0: self.type="empty"
     elif "ID_FS_TYPE" in self.data and self.data["ID_FS_TYPE"]=="ext4" and "ID_FS_LABEL" in self.data:
-      if self.data["ID_FS_LABEL"]=="TX-DATA-WWW": self.type="www"
+      if self.data["ID_FS_LABEL"]=="TX-DATA-NODE": self.type="node-data"
   def prepare(self,dtype):
     (ret,msg)=tools.makeFs(self.device,dtype)
     if ret==0: 
