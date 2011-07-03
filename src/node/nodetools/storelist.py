@@ -52,6 +52,7 @@ class Disk:
   def __init__(self,element):
     self.uuid=element.getAttribute("guid")
     self.host=element.getAttribute("host")
+    self.online=os.path.exists(Config.STORES_ROOT+"/"+self.uuid)
     self.stores=[]
     self.element=element
     for elm in element.getElementsByTagName("store"): self.stores.append(Store(elm,self.uuid))
@@ -80,4 +81,6 @@ class StoreList(object):
     if self.stores.has_key(uuid):  return self.stores[uuid]
     else: return None
   def write(self, out):
+      for disk in self.disks:
+          disk.element.setAttribute("online", str(disk.online))
       self.doc.writexml(out)

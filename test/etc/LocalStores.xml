@@ -1,5 +1,8 @@
 <?xml version="1.0" ?><stores>
 <disk guid="disk1">
-    <store  guid="store1" type="EI"/>
+    <store guid="store1" type="EI"/>
     <store guid="store2" type="EO"/>
-</disk><disk guid="disk2"/></stores>
+</disk><disk guid="disk3">
+    
+    </disk>
+</stores>

@@ -43,6 +43,7 @@ class LocalStoreList(StoreList):
         diskelement=self.doc.createElement("disk")
         diskelement.setAttribute("guid", disk)
         self.doc.documentElement.appendChild(diskelement)
+    if not os.path.exists(Config.STORES_ROOT+"/"+diskelement.getAttribute("guid")): raise Exception("Cannot create store on offline disk")
     os.mkdir(Config.STORES_ROOT+"/"+disk+"/"+uuid)
     element=self.doc.createElement("store")
     element.setAttribute("guid",uuid)
@@ -71,7 +72,10 @@ class LocalStoreList(StoreList):
     store=self.getByUuid(uuid)
     if store==None: raise Exception("Unknown store")
     if store.vhost<>"" or store.port<>"": self.unpublish(uuid)
-    rmtree(Config.STORES_ROOT+"/"+store.diskuuid+"/"+uuid)
+    try:
+        rmtree(Config.STORES_ROOT+"/"+store.diskuuid+"/"+uuid)
+    except Exception, e:
+        pass
     store.element.parentNode.removeChild(store.element)
     self.save()
     return "OK"
@@ -79,7 +83,10 @@ class LocalStoreList(StoreList):
     store=self.getByUuid(uuid)
     if store==None: raise Exception("Unknown store")
     if store.vhost=="" and store.port=="": raise Exception("Store is not published")
-    os.unlink(Config.NGINX_DIR+"/"+uuid)
+    try:
+        os.unlink(Config.NGINX_DIR+"/"+uuid)
+    except Exception, e:
+        pass
     store.element.removeAttribute("port")
     store.element.removeAttribute("vhost")
     self.save()
