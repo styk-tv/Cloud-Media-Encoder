@@ -66,6 +66,9 @@ class tools:
       ret[k]=v
     return ret
   @staticmethod
+  def umount(dev):
+      (retcode, output)=check_output(["/bin/umount","-l",dev],env={"LC_ALL" : "C"} )
+  @staticmethod
   def makeFs(dev):
     (retcode,output,err)=check_output(["/sbin/mkfs.ext4","-F",dev,"-L","TX-DATA-NODE"],env={"LC_ALL" : "C"} )
     return (retcode,err)

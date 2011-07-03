@@ -1,5 +1,6 @@
 KERNEL!="sd[a-z]", GOTO="nodedisk_label_end"
 
 ACTION=="add", RUN+="/usr/bin/python /opt/node/mount.py /dev/%k"
+ACTION=="remove", RUN+="/usr/bin/python /opt/node/unmount.py /dev/%k"
 
 LABEL="nodedisk_label_end"
