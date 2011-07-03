@@ -42,7 +42,7 @@ class EncoderParams:
     self.acodec=getAttributeDef(element, "acodec", "aac")
     self.outputtype=getAttributeDef(element, "outputType", "mp4")
     self.thumbsCount=int(getAttributeDef(element, "thCount", "0"))
-    self.thumbsInterval=int(getAttributeDef(element, "thInterval","0"))
+    self.thumbsInterval=float(getAttributeDef(element, "thInterval","0"))
     
 class EncodersList(object):
   def __init__(self, path=Config.CONFIGDIR+"/Encoders.xml"):

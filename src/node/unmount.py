@@ -21,9 +21,8 @@
 
 
 from nodetools.tools import tools,xmlmsg
-from nodetools.volume import volume
 import sys
-from xml.dom.minidom import getDOMImplementation
+import os
 
 
 def main():
@@ -34,11 +33,15 @@ def main():
         tab=line.split(" ")
         if len(tab)>1 and tab[0]==dev and tab[1][:16]=="/var/www/volumes": dir=tab[1]
    if dir==None: return xmlmsg("error","Not a node-data volume")
-   (ok,errmsg)=tools.unmount(dev)
-   os.rmdir(dir)
+   (ok,errmsg)=tools.umount(dev)
+  
   
    if ok<>0: return xmlmsg("error",str(errmsg))
-   else: return xmlmsg("result",str(errmsg))
+   try:
+     os.rmdir(dir)
+   except Exception,e:
+     return xmlmsg("error",str(e))
+   return xmlmsg("result","OK")
    
    
  
