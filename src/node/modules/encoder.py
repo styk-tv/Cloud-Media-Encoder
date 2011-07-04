@@ -45,7 +45,7 @@ class EncoderExecutor(AbstractTaskExecutor):
         self.srcfile=slist.getByUuid(task.attributes["srcStore"]).findAssetFile(task.attributes["srcAssetItem"], task.attributes["srcAssetItemType"])
         targetdir=slist.getByUuid(task.attributes["destStore"]).findAsset(task.attributes["srcAssetItem"])
         if not os.path.exists(targetdir): os.makedirs(targetdir)
-        self.outfile=slist.getByUuid(task.attributes["destStore"]).findAssetFile(task.attributes["srcAssetItem"], self.eparams.outputtype)
+        self.outfile=slist.getByUuid(task.attributes["destStore"]).findAssetFile(task.attributes["destAssetItem"], self.eparams.outputtype)
         
     def progressCb(self, progress):
         self.reporter.setQueueProperty(self.workflow, self.task, "frame", str(progress))

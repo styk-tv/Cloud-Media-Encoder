@@ -49,7 +49,7 @@ class ThumbsExecutor(AbstractTaskExecutor):
         self.frames=1
         
         self.srcfile=slist.getByUuid(task.attributes["srcStore"]).findAssetFile(task.attributes["srcAssetItem"], task.attributes["srcAssetItemType"])
-        self.targetdir=slist.getByUuid(task.attributes["destStore"]).findAsset(task.attributes["srcAssetItem"])
+        self.targetdir=slist.getByUuid(task.attributes["destStore"]).findAsset(task.attributes["destAssetItem"])
         if not os.path.exists(self.targetdir): os.makedirs(self.targetdir)
         
     def progressCb(self, progress):
@@ -75,7 +75,7 @@ class ThumbsExecutor(AbstractTaskExecutor):
         if ival==0: ival=float(fi.duration+1.0)/self.eparams.thumbsCount
         if ival==0: raise Exception("Wrong thumbs interval")
         while True:
-            outfile=self.targetdir+"/th_"+self.task.attributes["srcAssetItem"]+"_"+str(nr)+"."+self.eparams.outputtype
+            outfile=self.targetdir+"/th_"+self.task.attributes["destAssetItem"]+"_"+str(nr)+"."+self.eparams.outputtype
             fmpg=ThumbFFmpegHandler(self.eparams,   self.srcfile, outfile,  fi.frames, w, h, point)
             fmpg.run()
             point+=ival
