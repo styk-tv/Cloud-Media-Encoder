@@ -41,11 +41,13 @@ class EncoderExecutor(AbstractTaskExecutor):
         if self.eparams.type<>"ffmpeg_0612": raise Exception("Unknown encoder type "+self.eparams.type)
         slist=LocalStoreList()
         self.frames=1
-        
+        dstAsset=task.attributes["srcAssetItem"]
+        if task.attributes.has_key("destAssetItem"): dstAsset=task.attributes["destAssetItem"]
+
         self.srcfile=slist.getByUuid(task.attributes["srcStore"]).findAssetFile(task.attributes["srcAssetItem"], task.attributes["srcAssetItemType"])
-        targetdir=slist.getByUuid(task.attributes["destStore"]).findAsset(task.attributes["srcAssetItem"])
+        targetdir=slist.getByUuid(task.attributes["destStore"]).findAsset(dstAsset)
         if not os.path.exists(targetdir): os.makedirs(targetdir)
-        self.outfile=slist.getByUuid(task.attributes["destStore"]).findAssetFile(task.attributes["destAssetItem"], self.eparams.outputtype)
+        self.outfile=slist.getByUuid(task.attributes["destStore"]).findAssetFile(dstAsset, self.eparams.outputtype)
         
     def progressCb(self, progress):
         self.reporter.setQueueProperty(self.workflow, self.task, "frame", str(progress))

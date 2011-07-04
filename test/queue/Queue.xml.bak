@@ -17,6 +17,7 @@
       srcAssetItem="bear"
       srcAssetItemType="wmv"
       encoder="mp4encoder"
+      destAssetItem="abvc"
       destStore="store2"
 	/>  
 

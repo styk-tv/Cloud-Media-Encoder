@@ -1,5 +1,5 @@
 <?xml version="1.0" ?><encoders>
-        <encoder acodec="libmp3lame" audiobitrate="64000" bitrate="800000" extraparams="" fps="25" guid="mp4encoder" height="600" outputType="flv" type="ffmpeg" vcodec="flv" version="2.15" width="800"/>
-        <encoder  guid="thencoder" height="200" width="800" outputType="jpg" type="ffmpeg"  version="2.15" thCount="6"/>
-        <encoder guid="C53F833BB2D6416380C1ABF051D43ED6" params="-vcodec copy -vbsf h264_mp4toannexb -an" type="ffmpeg" version="2.16"/>
+        <encoder acodec="libmp3lame" audiobitrate="64000" bitrate="800000" extraparams="" fps="25" guid="mp4encoder" height="600" outputType="flv" type="ffmpeg_0612" vcodec="flv" version="2.15" width="800"/>
+        <encoder  guid="thencoder" height="200" width="800" outputType="jpg" type="ffmpeg_0612"  version="2.15" thCount="6"/>
+        <encoder guid="C53F833BB2D6416380C1ABF051D43ED6" params="-vcodec copy -vbsf h264_mp4toannexb -an" type="ffmpeg_0612" version="2.16"/>
 </encoders>
