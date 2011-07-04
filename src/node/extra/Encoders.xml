@@ -12,7 +12,7 @@ audiobitrate="128k" fps="25" extraparams="" guid="8A5D25EB9D234C9992062C08823BD9
         <encoder type="ffmpeg_0612" version="2.15" width="480" height="320" vcodec="libx264" acodec="aac" bitrate="1000k"
 audiobitrate="64k" fps="25" extraparams="-threads 0 -strict experimental -vpre fast" guid="8a5d23eb9d234c9992062c08823bd9f8" outputType="mp4" />
 <!-- Thumbnail every minutes -->
-        <thumbs type="ffmpeg" version="2.15" width="200" height="150" guid="8A5D25EB9D234C9992062C08823BD9F9" outputType="jpg" thInterval="60" />
+        <thumbs type="ffmpeg_0612" version="2.15" width="200" height="150" guid="8A5D25EB9D234C9992062C08823BD9F9" outputType="jpg" thInterval="60" />
 <!-- 3 evenly spaced thumbnails -->
         <thumbs type="ffmpeg_0612" version="2.15" width="200" height="150" guid="8A5D25EB9D234C9992062C08823BD9FA" outputType="jpg" thCount="5" />
 </encoders>

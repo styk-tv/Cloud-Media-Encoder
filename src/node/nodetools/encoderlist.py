@@ -77,7 +77,7 @@ class EncodersList(object):
 
   def create(self, indoc):
     elm=parse(indoc).documentElement
-    if elm.nodeName<>"encoder": raise Exception("Wrong format")
+    if elm.nodeName<>"encoder" and elm.nodeName<>"thumbs": raise Exception("Wrong format")
     if not elm.hasAttribute("guid"): elm.setAttribute("guid",  uuid4().get_hex())
     ep=EncoderParams(elm)
     if ep.type<>"ffmpeg_0612": raise Exception("Unknown encoder type")
@@ -87,7 +87,7 @@ class EncodersList(object):
 
   def writeTypes(self, out):
       doc=getDOMImplementation().createDocument(None, "EncoderTypes", None)
-      elm=doc.createElement("tencoderType");
+      elm=doc.createElement("encoderType");
       elm.setAttribute("name", "ffmpeg_0612")
       doc.documentElement.appendChild(elm)
       doc.writexml(out)
