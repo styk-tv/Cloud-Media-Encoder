@@ -44,7 +44,7 @@ class ThumbsExecutor(AbstractTaskExecutor):
         elist=EncodersList()
         self.eparams=elist.getByUuid(task.attributes["encoder"]) 
         if self.eparams==None: raise Exception("No encoder with guid "+task.attributes["encoder"])
-        if self.eparams.type<>"ffmpeg": raise Exception("Unknown encoder type "+self.eparams.type)
+        if self.eparams.type<>"ffmpeg_0612": raise Exception("Unknown encoder type "+self.eparams.type)
         slist=LocalStoreList()
         self.frames=1
         dstAsset=task.attributes["srcAssetItem"]
