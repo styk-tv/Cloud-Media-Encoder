@@ -19,7 +19,7 @@
 
 
 from nodetools.xmlqueue import XMLJobManager
-from nodetools.queue import AbstractTaskExecutor,Queue
+from nodetools.abstractqueue import AbstractTaskExecutor,Queue
 from nodetools.encoderlist import EncodersList
 from nodetools.localstores import LocalStoreList
 from nodetools.storelist import StoreList

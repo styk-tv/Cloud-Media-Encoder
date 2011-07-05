@@ -19,7 +19,7 @@
 
 
 from xml.dom.minidom import getDOMImplementation,parse
-from queue import *
+from abstractqueue import *
 import pkgutil
 from localstores import LocalStoreList
 from config import Config
@@ -109,6 +109,47 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
       if status==ST_PENDING or status==ST_FINISHED: wfnode.setAttribute("dateCompleted", datetime.now().ctime())
       with open(self.target, "w") as f: doc.writexml(f)
       
+  def _filterQueue(self, status):
+    with open(self.target, "r") as f: doc=parse(f)
+    nodes=doc.getElementsByTagName("workflow")
+    nodes=[node for node in nodes if self._getStatus(node)==status]
+    return (doc, nodes)
+    
+  def clear(self, status):
+    (doc, nodes)=self._filterQueue(status)
+    for node in nodes: doc.documentElement.removeChild(node)
+    with open(self.target, "w") as f: doc.writexml(f)
+    return len(nodes)
+      
+      
+  def _getStatus(self, wfnode):
+      status=0
+      if wfnode.hasAttribute("status"): status=int(wfnode.getAttribute("status"))
+      return status
+  def removeWorkflow(self, guid):
+    (doc, wfnode)=self._getWorkflowElement(Workflow(guid))
+    if wfnode==None: raise Exception("Unknown workflow")
+    doc.documentElement.removeChild(wfnode)
+    with open(self.target, "w") as f: doc.writexml(f)
+      
+  def retryWorkflow(self, guid):
+    (doc, wfnode)=self._getWorkflowElement(Workflow(guid))
+    if wfnode==None: raise Exception("Unknown workflow")
+    if len(wfnode.getAttribute("dateStart"))==0: raise Exception("Workflow not finished yet")
+    status=0
+    if wfnode.hasAttribute("status"): status=int(wfnode.getAttribute("status"))
+    if status<>ST_ERROR and status<>ST_FINISHED: raise Exception("Workflow not finished yet")
+    self._resetProgress(wfnode)
+    for node in wfnode.getElementsByTagName("task"): self._resetProgress(node)
+    with open(self.target, "w") as f: doc.writexml(f)
+      
+  def _resetProgress(self, wfnode):
+    wfnode.setAttribute("status", "0")
+    wfnode.setAttribute("dateStart", "")
+    if wfnode.hasAttribute("errorMessage"): wfnode.removeAttribute("errorMessage")
+    if wfnode.hasAttribute("dateCompleted"): wfnode.removeAttribute("dateCompleted")
+    wfnode.setAttribute("progress", "0")
+    
   def registerPlugins(self):
       path="/".join(modules.__file__.split("/")[:-1])
       for name in os.listdir(path):

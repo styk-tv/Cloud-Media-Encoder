@@ -21,7 +21,7 @@
 from base64 import b64encode, b64decode
 from M2Crypto.EVP import Cipher
 from nodetools.localstores import LocalStoreList
-from nodetools.queue import AbstractTaskExecutor,Queue
+from nodetools.abstractqueue import AbstractTaskExecutor,Queue
 import os
 
 

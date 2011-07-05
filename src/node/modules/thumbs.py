@@ -19,7 +19,7 @@
 
 
 from nodetools.xmlqueue import XMLJobManager
-from nodetools.queue import AbstractTaskExecutor,Queue, ST_WORKING
+from nodetools.abstractqueue import AbstractTaskExecutor,Queue, ST_WORKING
 from nodetools.encoderlist import EncodersList
 from nodetools.localstores import LocalStoreList
 from nodetools.ffmpeg import FFmpegHandler, FileInfo
@@ -47,11 +47,11 @@ class ThumbsExecutor(AbstractTaskExecutor):
         if self.eparams.type<>"ffmpeg_0612": raise Exception("Unknown encoder type "+self.eparams.type)
         slist=LocalStoreList()
         self.frames=1
-        dstAsset=task.attributes["srcAssetItem"]
-        if task.attributes.has_key("destAssetItem"): dstAsset=task.attributes["destAssetItem"]
+        self.destAsset=task.attributes["srcAssetItem"]
+        if task.attributes.has_key("destAssetItem"): self.destAsset=task.attributes["destAssetItem"]
         
         self.srcfile=slist.getByUuid(task.attributes["srcStore"]).findAssetFile(task.attributes["srcAssetItem"], task.attributes["srcAssetItemType"])
-        self.targetdir=slist.getByUuid(task.attributes["destStore"]).findAsset(dstAsset)
+        self.targetdir=slist.getByUuid(task.attributes["destStore"]).findAsset(self.destAsset)
         if not os.path.exists(self.targetdir): os.makedirs(self.targetdir)
         
     def progressCb(self, progress):
@@ -77,7 +77,7 @@ class ThumbsExecutor(AbstractTaskExecutor):
         if ival==0: ival=float(fi.duration+1.0)/self.eparams.thumbsCount
         if ival==0: raise Exception("Wrong thumbs interval")
         while True:
-            outfile=self.targetdir+"/th_"+self.task.attributes["srcAssetItem"]+"_"+str(nr)+"."+self.eparams.outputtype
+            outfile=self.targetdir+"/th_"+self.destAsset+"_"+str(nr)+"."+self.eparams.outputtype
             fmpg=ThumbFFmpegHandler(self.eparams,   self.srcfile, outfile,  fi.frames, w, h, point)
             fmpg.run()
             point+=ival

@@ -1,6 +1,6 @@
 <?xml version="1.0" ?><queue dateCompleted="" dateCreated="" dateStart="" destination="192.168.1.211" guid="78D6012F21264C50802247930B8DBE9D" queue_version="0.1">
 
- <workflow guid="workflow1">
+ <workflow guid="workflow1" dateStart="a" status="2">
 
 <!--
    <task guid="task2" action="MOVE"
@@ -16,6 +16,7 @@
       srcStore="store1"
       srcAssetItem="bear"
       srcAssetItemType="wmv"
+      dateStart="a"
       encoder="mp4encoder"
       destAssetItem="abvc"
       destStore="store2"

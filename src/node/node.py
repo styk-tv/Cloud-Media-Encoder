@@ -21,7 +21,7 @@
 
 
 from nodetools.xmlqueue import XMLJobManager
-from nodetools.queue import AbstractTaskExecutor,Queue, ST_WORKING
+from nodetools.abstractqueue import AbstractTaskExecutor,Queue, ST_WORKING
 from nodetools.encoderlist import EncodersList
 from nodetools.localstores import LocalStoreList
 from shutil import rmtree
