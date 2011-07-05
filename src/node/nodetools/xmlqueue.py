@@ -112,7 +112,14 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
   def _filterQueue(self, status):
     with open(self.target, "r") as f: doc=parse(f)
     nodes=doc.getElementsByTagName("workflow")
-    nodes=[node for node in nodes if self._getStatus(node)==status]
+    nodes=[node for node in nodes if status==None or self._getStatus(node)==status]
+    return (doc, nodes)
+
+  def _filterQueueNeq(self, status):
+    with open(self.target, "r") as f: doc=parse(f)
+    nodes=doc.getElementsByTagName("workflow")
+    if status==None: return (doc, [])
+    nodes=[node for node in nodes if self._getStatus(node)<>status]
     return (doc, nodes)
     
   def clear(self, status):
@@ -122,6 +129,16 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
     return len(nodes)
       
       
+  def list(self, out, status, guid):
+      (doc, wfnodes)=self._filterQueueNeq(status)
+      if guid<>None: 
+          t=Task(guid, "")
+          for wfnode in doc.getElementsByTagName("workflow"):
+              print wfnode
+              if self._getTaskElement(wfnode, t)<>None: break
+              doc.documentElement.removeChild(wfnode)
+      for i in wfnodes: doc.documentElement.removeChild(i)
+      doc.writexml(out)
   def _getStatus(self, wfnode):
       status=0
       if wfnode.hasAttribute("status"): status=int(wfnode.getAttribute("status"))

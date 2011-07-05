@@ -29,7 +29,15 @@ def main():
         if len(sys.argv)<2: raise Exception("Usage: queue.py <list>|<clear>|<remove>|<retry>")
         action=sys.argv[1]
         queue=XMLJobManager()
-        if action=="list": queue.write(sys.stdout)
+        if action=="list":   # list  <status> <task guid>
+           status=None
+           startTask=None
+           try:
+             if len(sys.argv)>2: status=int(sys.argv[2])
+           except Exception, e:
+               pass
+           if len(sys.argv)>3: startTask=sys.argv[3]
+           queue.list(sys.stdout, status, startTask)
         elif action=="remove":
             if len(sys.argv)<3: raise Exception("Usage: queue.py remove <workflow>")
             ret=queue.removeWorkflow(sys.argv[2])
