@@ -22,6 +22,9 @@ from xml.dom.minidom import getDOMImplementation, parse
 from config import Config
 import os
 
+def freespace(p):
+    s = os.statvfs(p)
+    return s.f_bsize * s.f_bavail
 
 class Store:
   def __init__(self,element,diskuuid):
@@ -53,11 +56,13 @@ class Disk:
     self.uuid=element.getAttribute("guid")
     self.host=element.getAttribute("host")
     self.online=os.path.exists(Config.STORES_ROOT+"/"+self.uuid)
+    self.freespace=0
+    if self.online: self.freespace=freespace(Config.STORES_ROOT+"/"+self.uuid)
     self.stores=[]
     self.element=element
     for elm in element.getElementsByTagName("store"): self.stores.append(Store(elm,self.uuid))
-    
 
+  
     
     
 class StoreList(object):

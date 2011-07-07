@@ -24,6 +24,7 @@
 import psutil
 from xml.dom.minidom import getDOMImplementation
 from nodetools.tools import xmlmsg
+from nodetools.localstores import LocalStoreList
 import sys
 from time import sleep
 
@@ -36,6 +37,13 @@ def printStatus(out):
     mem.setAttribute("avail_virtual", str(psutil.avail_virtmem()))
     doc.documentElement.appendChild(mem)
     cpu=doc.createElement("cpu")
+    lsl=LocalStoreList()
+    for disk in lsl.disks:
+        d=doc.createElement("disk")
+        d.setAttribute("guid", disk.uuid)
+        d.setAttribute("online", str(disk.online))
+        d.setAttribute('freespace', str(disk.freespace))
+        doc.documentElement.appendChild(d)
     cpu.setAttribute("usage", str(psutil.cpu_percent()))
     doc.documentElement.appendChild(cpu)
     doc.writexml(out)
