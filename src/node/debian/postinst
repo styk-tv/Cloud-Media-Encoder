@@ -24,6 +24,9 @@ case "$1" in
     mkdir -p /home/node/.ssh
     if [ ! -f /home/node/.ssh/id_rsa.pub ]; then
 	ssh-keygen -t rsa -f /home/node/.ssh/id_rsa -P "" -q
+	touch /home/node/.ssh/authorized_keys
+	chown -R node /home/node/.ssh
+	chmod 0600 /home/node/.ssh/id_rsa*
     fi
     mkdir -p /var/www/volumes
     chown node /var/www/volumes

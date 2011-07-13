@@ -31,17 +31,14 @@ class Store:
     self.type=element.getAttribute("type")
     self.uuid=element.getAttribute("guid")
     self.diskuuid=diskuuid
-    self.path=self._findPath()
+    self.path=Config.STORES_ROOT+"/"+self.diskuuid+"/"+self.uuid
     self.vhost=element.getAttribute("vhost")
     self.port=element.getAttribute("port")
     self.element=element
+    self.local=os.path.exists(p)
 
-  def _findPath(self):
-    p=Config.STORES_ROOT+"/"+self.diskuuid+"/"+self.uuid
-    if os.path.exists(p): return p
-    else: return None
   def isLocal(self):
-    return self.path<>None
+    return self.local
     
   # returns directory containing given asset
   def findAsset(self,assetId):

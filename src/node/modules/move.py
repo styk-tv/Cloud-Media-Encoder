@@ -27,6 +27,9 @@ from shutil import move
 from os import rename, makedirs
 from os.path import dirname, exists
 import paramiko
+from nodetools.config import Config
+
+PRIVKEY="/home"+Config.USER+"/.ssh/id_rsa"
 
 class MoveExecutor(AbstractTaskExecutor):
     def __init__(self,reporter, workflow,task):
@@ -43,12 +46,26 @@ class MoveExecutor(AbstractTaskExecutor):
         
     def run(self):
         if self.isLocal: self.localRun()
-        else: raise Exception("Remote move not implemented")
+        else: self.remoteRun()
     def localRun(self):
         self.destdir=self.targetstore.findAsset(self.task.attributes["destAssetItem"])
         if not exists(dirname(self.destdir)): makedirs(dirname(self.destdir))
         move(self.srcasset,self.destdir+".tmp")
         rename(self.destdir+".tmp",self.destdir)
+    def remoteRun(self):
+        key = paramiko.RSAKey.from_private_key_file(PRIVKEY)
+        transport = paramiko.Transport(self.targetstore.host)
+        transport.start_client()
+        transport.auth_publickey(Config.USER,  key)
+        sftp=transport.open_session()
+        self.destdir=self.targetstore.findAsset(self.task.attributes["destAssetItem"])
+        sftp.mkdir(self.destdir+".tmp")
+        for f in os.listdir(self.srcasset):
+            sftp.put(self.srcasset+"/"+f, f)
+        # FIXME: progress
+        sftp.rename(self.destdir+".tmp", self.destdir)
+        
+        
         
 
 def pluginInfo():

@@ -23,3 +23,4 @@ class Config:
     QUEUEDIR="/opt/node/queue"
     STORES_ROOT="/var/www/volumes"
     NGINX_DIR="/etc/nginx/sites-enabled"
+    USER="node"

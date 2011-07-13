@@ -23,3 +23,4 @@ class Config:
     QUEUEDIR="./queue"
     STORES_ROOT="./volumes"
     NGINX_DIR="./nginx"
+    USER="qba"

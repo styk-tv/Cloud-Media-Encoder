@@ -24,6 +24,7 @@ import os
 from uuid import uuid4
 from shutil import rmtree
 from storelist import StoreList
+from tools import tools
 
 # <store disk="GUID" type="TYPE" vhost="host" port="port" />
 
@@ -45,6 +46,7 @@ class LocalStoreList(StoreList):
         self.doc.documentElement.appendChild(diskelement)
     if not os.path.exists(Config.STORES_ROOT+"/"+diskelement.getAttribute("guid")): raise Exception("Cannot create store on offline disk")
     os.mkdir(Config.STORES_ROOT+"/"+disk+"/"+uuid)
+    tools.chown(Config.STORES_ROOT+"/"+disk+"/"+uuid, Config.USER)
     element=self.doc.createElement("store")
     element.setAttribute("guid",uuid)
     element.setAttribute("type",type)
