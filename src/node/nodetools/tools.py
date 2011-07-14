@@ -21,6 +21,33 @@ import subprocess
 from xml.dom.minidom import getDOMImplementation
 import sys
 import os
+from grp import getgrnam
+from pwd import getpwdnam
+
+def _get_gid(name):
+    """Returns a gid, given a group name."""
+    if getgrnam is None or name is None:
+        return None
+    try:
+        result = getgrnam(name)
+    except KeyError:
+        result = None
+    if result is not None:
+        return result[2]
+    return None
+
+def _get_uid(name):
+    """Returns an uid, given a user name."""
+    if getpwnam is None or name is None:
+        return None
+    try:
+        result = getpwnam(name)
+    except KeyError:
+        result = None
+    if result is not None:
+        return result[2]
+    return None
+
 
 def check_output(*popenargs, **kwargs):
     process = subprocess.Popen(stdout=subprocess.PIPE, stderr=subprocess.PIPE, *popenargs, **kwargs)

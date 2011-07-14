@@ -19,6 +19,7 @@
 
 
 from tools import tools
+from config import Config
 import os
 
 MOUNTROOT="/var/www/volumes"
@@ -53,6 +54,7 @@ class volume:
     except OSError, e:
       return (False,e.msg)
     (ret,msg)=tools.mount(self.device,target)
+    tools.chown(target, Config.USER)
     if ret==0: msg=target
     return (ret==0,msg)
  
