@@ -22,7 +22,7 @@ from xml.dom.minidom import getDOMImplementation
 import sys
 import os
 from grp import getgrnam
-from pwd import getpwdnam
+from pwd import getpwnam
 
 def _get_gid(name):
     """Returns a gid, given a group name."""
