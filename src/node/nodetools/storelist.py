@@ -35,7 +35,7 @@ class Store:
     self.vhost=element.getAttribute("vhost")
     self.port=element.getAttribute("port")
     self.element=element
-    self.local=os.path.exists(p)
+    self.local=os.path.exists(self.path)
 
   def isLocal(self):
     return self.local

@@ -2,15 +2,15 @@
 
  <workflow guid="workflow1">
 
-<!--
+
    <task guid="task2" action="MOVE"
       srcStore="store1"
-      srcAssetItem="basset1"
-      destStore="store1"
+      srcAssetItem="asset1"
+      destStore="722ffa90e2e54751ac8f7a072eea3b0b"
       destAssetItem="asset1"
       key="AAAAAAAAAAAAAAAAAAAAAA=="
 	/>
--->
+
 
    <task guid="task1" action="MEDIAINFO"
       srcStore="store1"

@@ -3,6 +3,7 @@
           <store guid="store1" type="EI" />
           <store guid="store2" type="EO" /> 
      </disk>
+     <disk host="192.168.1.10"  guid="5ed7715220e04a7a9256b52d5d833b0e"><store guid="722ffa90e2e54751ac8f7a072eea3b0b" type="AI"/></disk>
      <disk guid="92C9C3BD61CB42B688F9D554D6E7BD69" host="192.168.1.227">
           <store guid="96C35A76B458441FB24504D626984F48" type="DO"/>
           <store guid="92C9C3BD61CB42B688F9D554D6E7BD69" type="AS"/>

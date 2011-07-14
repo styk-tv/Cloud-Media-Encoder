@@ -23,13 +23,37 @@ from nodetools.abstractqueue import AbstractTaskExecutor,Queue
 from nodetools.encoderlist import EncodersList
 from nodetools.localstores import LocalStoreList
 from nodetools.storelist import StoreList
-from shutil import move
-from os import rename, makedirs
-from os.path import dirname, exists
+from shutil import move, rmtree
+from os import rename, makedirs, listdir
+from os.path import dirname, exists, split
 import paramiko
+import errno
 from nodetools.config import Config
 
-PRIVKEY="/home"+Config.USER+"/.ssh/id_rsa"
+PRIVKEY="/home/"+Config.USER+"/.ssh/id_rsa"
+REMUSER=Config.USER
+
+def sftp_exists(path, sftp):
+    try:
+        sftp.stat(path)
+        return True
+    except IOError, e:
+        if e.errno==errno.ENOENT: return False
+        raise
+
+def sftp_makedirs(name, sftp):
+    if sftp_exists(name, sftp): return
+    head, tail = split(name)
+    if not tail:
+        head, tail = split(head)
+    if head and tail and not sftp_exists(head, sftp):
+        try:
+            sftp_makedirs(head, sftp)
+        except OSError, e:
+            if e.errno != errno.EEXIST:
+                raise
+    sftp.mkdir(name)
+
 
 class MoveExecutor(AbstractTaskExecutor):
     def __init__(self,reporter, workflow,task):
@@ -43,6 +67,7 @@ class MoveExecutor(AbstractTaskExecutor):
             slist2=StoreList()
             self.targetstore=slist2.getByUuid(task.attributes["destStore"])
             if self.targetstore==None: raise Exception("Unknown destinatioin store")
+            self.desthost=slist2.getDisk(self.targetstore.diskuuid).host
         
     def run(self):
         if self.isLocal: self.localRun()
@@ -54,16 +79,19 @@ class MoveExecutor(AbstractTaskExecutor):
         rename(self.destdir+".tmp",self.destdir)
     def remoteRun(self):
         key = paramiko.RSAKey.from_private_key_file(PRIVKEY)
-        transport = paramiko.Transport(self.targetstore.host)
+        transport = paramiko.Transport(self.desthost)
         transport.start_client()
-        transport.auth_publickey(Config.USER,  key)
-        sftp=transport.open_session()
+        transport.auth_publickey(REMUSER,  key)
+#        sftp=transport.open_session()
+        sftp = paramiko.SFTPClient.from_transport(transport)
         self.destdir=self.targetstore.findAsset(self.task.attributes["destAssetItem"])
-        sftp.mkdir(self.destdir+".tmp")
-        for f in os.listdir(self.srcasset):
-            sftp.put(self.srcasset+"/"+f, f)
+        sftp_makedirs(self.destdir+".tmp", sftp)
+        for f in listdir(self.srcasset):
+            sftp.put(self.srcasset+"/"+f, self.destdir+".tmp/"+f)
         # FIXME: progress
         sftp.rename(self.destdir+".tmp", self.destdir)
+        transport.close()
+        rmtree(self.srcasset)
         
         
         
