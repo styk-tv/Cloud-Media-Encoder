@@ -6,8 +6,8 @@
    <task guid="task2" action="MOVE"
       srcStore="store1"
       srcAssetItem="asset1"
-      destStore="722ffa90e2e54751ac8f7a072eea3b0b"
-      destAssetItem="asset1"
+      destStore="store1"
+      destAssetItem="vasset"
       key="AAAAAAAAAAAAAAAAAAAAAA=="
 	/>
 

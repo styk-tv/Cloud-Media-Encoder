@@ -23,8 +23,9 @@ from nodetools.abstractqueue import AbstractTaskExecutor,Queue
 from nodetools.encoderlist import EncodersList
 from nodetools.localstores import LocalStoreList
 from nodetools.storelist import StoreList
+from nodetools.tools import tools
 from shutil import move, rmtree
-from os import rename, makedirs, listdir
+from os import rename, listdir, mkdir, chown, curdir
 from os.path import dirname, exists, split
 import paramiko
 import errno
@@ -32,6 +33,22 @@ from nodetools.config import Config
 
 PRIVKEY="/home/"+Config.USER+"/.ssh/id_rsa"
 REMUSER=Config.USER
+
+def makedirs(name, user=Config.USER):
+    head, tail = split(name)
+    if not tail:
+        head, tail = split(head)
+    if head and tail and not exists(head):
+        try:
+            makedirs(head, user)
+        except OSError, e:
+            # be happy if someone already created the path
+            if e.errno != errno.EEXIST:
+                raise
+        if tail == curdir:           # xxx/newdir/. exists if xxx/newdir exists
+            return
+    mkdir(name)
+    tools.chown(name, user)
 
 def sftp_exists(path, sftp):
     try:
@@ -74,7 +91,8 @@ class MoveExecutor(AbstractTaskExecutor):
         else: self.remoteRun()
     def localRun(self):
         self.destdir=self.targetstore.findAsset(self.task.attributes["destAssetItem"])
-        if not exists(dirname(self.destdir)): makedirs(dirname(self.destdir))
+        if not exists(dirname(self.destdir)): 
+            makedirs(dirname(self.destdir))
         move(self.srcasset,self.destdir+".tmp")
         rename(self.destdir+".tmp",self.destdir)
     def remoteRun(self):
