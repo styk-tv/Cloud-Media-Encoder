@@ -25,7 +25,7 @@ from nodetools.localstores import LocalStoreList
 from nodetools.storelist import StoreList
 from nodetools.tools import tools
 from shutil import move, rmtree
-from os import rename, listdir, mkdir, chown, curdir
+from os import rename, listdir,  makedirs
 from os.path import dirname, exists, split
 import paramiko
 import errno
@@ -34,21 +34,6 @@ from nodetools.config import Config
 PRIVKEY="/home/"+Config.USER+"/.ssh/id_rsa"
 REMUSER=Config.USER
 
-def makedirs(name, user=Config.USER):
-    head, tail = split(name)
-    if not tail:
-        head, tail = split(head)
-    if head and tail and not exists(head):
-        try:
-            makedirs(head, user)
-        except OSError, e:
-            # be happy if someone already created the path
-            if e.errno != errno.EEXIST:
-                raise
-        if tail == curdir:           # xxx/newdir/. exists if xxx/newdir exists
-            return
-    mkdir(name)
-    tools.chown(name, user)
 
 def sftp_exists(path, sftp):
     try:
