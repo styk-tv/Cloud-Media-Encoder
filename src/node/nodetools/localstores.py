@@ -29,6 +29,20 @@ from tools import tools
 # <store disk="GUID" type="TYPE" vhost="host" port="port" />
 
 
+
+class DestAsset:
+    def __init__(self, store,  assetname):
+        self.store=store
+        self.assetname=assetname
+        self.path=store.findAsset(assetname)
+        self.tmppath=self.path+".tmp"
+    def __enter__(self):
+        os.mkdir
+        return self.tmppath
+    def __exit__(self, type, value, traceback):
+        if isinstance(value, Exception):
+            rmtree(self.tmppath)
+        else: rename(self.tmppath, self.path)
     
 class LocalStoreList(StoreList):
   def __init__(self, path=Config.CONFIGDIR+"/LocalStores.xml"):

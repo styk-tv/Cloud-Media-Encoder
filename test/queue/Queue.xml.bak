@@ -12,8 +12,9 @@
 	/>
 -->
 
-   <task guid="task1" action="THUMBS"
+   <task guid="task1" action="DOWNLOAD"
       srcStore="store1"
+      url="http://admin.juzou.tv/mobile/Extremists-176.mp4"
       srcAssetItem="asset1"
       srcAssetItemType="ts"
       dateStart=""
