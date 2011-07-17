@@ -32,11 +32,12 @@ class DownloadExecutor(AbstractTaskExecutor):
         slist=LocalStoreList()
         self.destAsset=task.attributes["destAssetItem"]
         self.targetdir=slist.getByUuid(task.attributes["destStore"]).findAsset(self.destAsset)
+        self.target=slist.getByUuid(task.attributes["destStore"]).findAssetFile(self.destAsset, task.attributes["destAssetItemType"])
         self.url=task.attributes["url"]
         
     def run(self):
         if not os.path.exists(self.targetdir): os.makedirs(self.targetdir)
-        self.httpDownload(self.url, (self.targetdir+"/"+self.url.split("/")[-1:][0]),  {}, self.reportDownloadProgress)
+        self.httpDownload(self.url, self.target,  {}, self.reportDownloadProgress)
         
     def reportDownloadProgress(self, blocknum, bs, size):
         self.updateProgress(blocknum*bs*100.0/size)
