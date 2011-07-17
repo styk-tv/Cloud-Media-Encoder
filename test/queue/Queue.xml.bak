@@ -2,7 +2,7 @@
 
  <workflow guid="workflow1">
 
-
+<!--
    <task guid="task2" action="MOVE"
       srcStore="store1"
       srcAssetItem="asset1"
@@ -10,14 +10,14 @@
       destAssetItem="vasset"
       key="AAAAAAAAAAAAAAAAAAAAAA=="
 	/>
+-->
 
-
-   <task guid="task1" action="MEDIAINFO"
+   <task guid="task1" action="THUMBS"
       srcStore="store1"
-      srcAssetItem="bear"
-      srcAssetItemType="wmv"
-      dateStart="a"
-      encoder="mp4encoder"
+      srcAssetItem="asset1"
+      srcAssetItemType="ts"
+      dateStart=""
+      encoder="th1"
       destAssetItem="abvc"
       destStore="store2"
 	/>  

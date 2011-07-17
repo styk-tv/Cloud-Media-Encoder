@@ -33,6 +33,8 @@ import sys
 
 class FileInfo:
     dimregexp=re.compile("([\\w]+)x([\\w]+).*")
+    darregexp=re.compile("DAR ([\\w]+):([\\w]+)");
+
     def __init__(this, filename):
         this.fps=25
         this.width=0
@@ -48,8 +50,12 @@ class FileInfo:
             for ret in out.splitlines():
                 if ret.startswith("  Duration:"): this.duration=this.parseDuration(ret)
                 if ret.find("Stream #0")!=-1 and ret.find("Video")!=-1:
+                    m=FileInfo.darregexp.search(ret)
                     (this.width, this.height)=this.parseSize(ret)
-                    this.aspect=float(this.width)/float(this.height)
+                    if m<>None:   
+                        this.aspect=float(m.group(1))/float(m.group(2))
+                    else: 
+                        this.aspect=float(this.width)/float(this.height)
                     this.fps=this.parseFps(ret)
                     this.frames=this.computeFrames()
         ff.wait()

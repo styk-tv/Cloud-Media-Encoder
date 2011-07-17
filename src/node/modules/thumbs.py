@@ -32,9 +32,14 @@ import sys
 
 
 class ThumbFFmpegHandler(FFmpegHandler):
-    def __init__(self, eparams ,  localfile,  outfile, frames, width, height, seek):
+    FAST_SEEK_THRESHOLD=15
+    def __init__(self, eparams ,  localfile,  outfile, frames, width, height, seek, interval):
         super(ThumbFFmpegHandler, self).__init__(eparams, localfile, outfile, frames, None)
-        self.commonargs+=["-ss", str(seek), "-s", str(width)+"x"+str(height), "-qscale","3","-vframes","1"]
+        if interval>ThumbFFmpegHandler.FAST_SEEK_THRESHOLD: 
+            self.commonargs=self.commonargs[:2]+["-ss", str(seek)]+self.commonargs[2:]
+        else: 
+            self.commonargs+=["-ss", str(seek)]
+        self.commonargs+=[ "-s", str(width)+"x"+str(height), "-qscale","3","-vframes","1"]
         if len(eparams.extraparams)>0: this.commonargs+=eparams.extraparams.split(" ")
 
 
@@ -78,7 +83,7 @@ class ThumbsExecutor(AbstractTaskExecutor):
         if ival==0: raise Exception("Wrong thumbs interval")
         while True:
             outfile=self.targetdir+"/th_"+self.destAsset+"_"+str(nr)+"."+self.eparams.outputtype
-            fmpg=ThumbFFmpegHandler(self.eparams,   self.srcfile, outfile,  fi.frames, w, h, point)
+            fmpg=ThumbFFmpegHandler(self.eparams,   self.srcfile, outfile,  fi.frames, w, h, point,  ival)
             fmpg.run()
             point+=ival
             nr+=1
