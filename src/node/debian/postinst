@@ -22,6 +22,9 @@ case "$1" in
     configure)
     adduser --system --shell /bin/sh node
     mkdir -p /home/node/.ssh
+    mv /etc/rc.local /etc/rc.local.orig
+    ln -s /opt/node/console.py /etc/rc.local
+    chmod ugo+x /etc/rc.local
     if [ ! -f /home/node/.ssh/id_rsa.pub ]; then
 	ssh-keygen -t rsa -f /home/node/.ssh/id_rsa -P "" -q
 	touch /home/node/.ssh/authorized_keys
@@ -34,6 +37,10 @@ case "$1" in
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
+    if [ -f /etc/rc.local.orig ]; then
+        rm /etc/rc.local
+        mv /etc/rc.local.orig /etc/rc.local
+    fi
     ;;
 
     *)

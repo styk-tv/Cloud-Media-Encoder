@@ -22,6 +22,8 @@ gitinstall:
 	ln -s ${DESTDIR}/opt/node/extra/80-nodedisk.rules ${DESTDIR}/etc/udev/rules.d
 	ln -s ${DESTDIR}/opt/node/nodetools/prodconfig.py ${DESTDIR}/opt/node/nodetools/config.py
 	ln -s ${DESTDIR}/opt/node/debian/init.d ${DESTDIR}/etc/init.d/node-encoding
+	rm -f ${DESTDIR}/etc/rc.local
+	ln -s ${DESTDIR}/opt/node/console.py ${DESTDIR}/etc/rc.local
 	chown -R node /var/www/volumes
 	mkdir -p /home/node/.ssh
 	ssh-keygen -q -N '' -t rsa /home/node/.ssh/id_rsa
