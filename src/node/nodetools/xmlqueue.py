@@ -128,6 +128,18 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
     with open(self.target, "w") as f: doc.writexml(f)
     return len(nodes)
       
+  def listByStatus(self):
+    ret={}
+    ret[0]=0
+    ret[1]=0
+    ret[2]=0
+    ret[3]=0
+    with open(self.target, "r") as f: doc=parse(f)
+    nodes=doc.getElementsByTagName("workflow")
+    for node in nodes:
+        st=self._getStatus(node)
+        ret[st]=ret[st]+1
+    return ret
       
   def list(self, out, status, guid):
       (doc, wfnodes)=self._filterQueueNeq(status)

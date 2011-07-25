@@ -23,14 +23,17 @@ from nodetools import version
 from nodetools import pwdtools
 from nodetools.config import Config
 import sys
+from nodetools.xmlqueue import XMLJobManager
 
 def main_menu():
+    a=XMLJobManager()
+    status=a.listByStatus()
+    
     print "(c) 2011 Node Styk.Tv v0.2 ", version.commit, " (", version.date+")"
     print "Node ID:",  version.nodeid
     print "IP: ", pwdtools.getMainIp(), "  (", pwdtools.getIfaceType()+")"
     print
-    print "QUEUE: "
-    print "WORKFLOWS"
+    print "WORKFLOWS: ", status[0], " pending, ", status[1], " processing, ", status[2], " finished, ",  status[3], " failed"
     print
     print "1) Network setting"
     print "2) Change root password"
