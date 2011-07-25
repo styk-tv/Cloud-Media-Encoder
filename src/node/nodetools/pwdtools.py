@@ -70,4 +70,5 @@ def setStatic(ip, gw, netmask, dns1, dns2):
             f.write("nameserver "+dns1+"\nnameserver "+dns2+"\n")
 
 def restartNetwork():
-        subprocess.call("/etc/init.d/networking restart", shell=True)
+        subprocess.call(["/sbin/ifdown", MAIN_IFACE])
+        subprocess.call(["/sbin/ifup", MAIN_IFACE])
