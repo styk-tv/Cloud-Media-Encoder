@@ -7,7 +7,7 @@ fi
 
 echo "Installing dependencies"
 
-apt-get install -y ffmpeg python openssh-server python-daemon python-psutil python-paramiko python-m2crypto nginx make || exit 1 
+apt-get install -y ffmpeg python openssh-server python-daemon python-psutil python-paramiko python-m2crypto nginx make python-pam mediainfo || exit 1 
 
 
 echo "Installing"

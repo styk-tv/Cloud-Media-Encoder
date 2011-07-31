@@ -20,9 +20,12 @@
 import subprocess
 from xml.dom.minidom import getDOMImplementation
 import sys
+from signal import SIGHUP
 import os
 from grp import getgrnam
 from pwd import getpwnam
+
+NGINX_PID="/var/run/nginx.pid"
 
 def _get_gid(name):
     """Returns a gid, given a group name."""
@@ -104,6 +107,11 @@ class tools:
   def mount(dev,path):
     (retcode,output,err)=check_output(["/bin/mount",dev,path],env={"LC_ALL" : "C"} )
     return (retcode,err)
+  @staticmethod
+  def reloadNginx():
+      with open(NGINX_PID, "r") as f:
+          pid=int(f.read())
+          os.kill(pid, SIGHUP)
   @staticmethod
   def chown(path, user=None, group=None):
     """Change owner user and group of the given path (file or dir).

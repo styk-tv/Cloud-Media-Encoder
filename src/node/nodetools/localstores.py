@@ -82,6 +82,7 @@ class LocalStoreList(StoreList):
     store.element.setAttribute("vhost", vhost)
     store.element.setAttribute("port", str(port))
     self.save()
+    tools.reloadNginx()
     return vhost+":"+str(port)
       
   def remove(self, uuid):
@@ -106,6 +107,7 @@ class LocalStoreList(StoreList):
     store.element.removeAttribute("port")
     store.element.removeAttribute("vhost")
     self.save()
+    tools.reloadNginx()
     return "OK"
   
     
