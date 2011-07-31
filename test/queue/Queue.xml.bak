@@ -2,15 +2,15 @@
 
  <workflow guid="workflow1">
 
-<!--
-   <task guid="task2" action="MOVE"
+
+   <task guid="task2" action="DELETE"
       srcStore="store1"
-      srcAssetItem="asset1"
+      srcAssetItem="vasset"
       destStore="store1"
       destAssetItem="vasset"
       key="AAAAAAAAAAAAAAAAAAAAAA=="
 	/>
--->
+
 
    <task guid="task1" action="DOWNLOAD"
       srcStore="store1"
