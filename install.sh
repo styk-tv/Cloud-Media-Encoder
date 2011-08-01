@@ -5,16 +5,62 @@ if [ -e /opt/node ]; then
     exit 1 
 fi
 
+if [ ! -e .git ]; then
+    echo "Run install.sh from main source directory"
+    exit 1
+fi
+
 echo "Installing dependencies"
 
-apt-get install -y ffmpeg python openssh-server python-daemon python-psutil python-paramiko python-m2crypto nginx make python-pam mediainfo || exit 1 
+apt-get install --force-yes -y ffmpeg python openssh-server python-daemon python-psutil python-paramiko python-m2crypto nginx make python-pam mediainfo || exit 1 
 
+DESTDIR=/
 
 echo "Installing"
+
+adduser --system --shell /bin/sh node || true
+mkdir -p /home/node/.ssh
+
+if [ ! -f /home/node/.ssh/id_rsa.pub ]; then
+	ssh-keygen -t rsa -f /home/node/.ssh/id_rsa -P "" -q
+	touch /home/node/.ssh/authorized_keys
+	chown -R node /home/node/.ssh
+	chmod 0600 /home/node/.ssh/*
+fi
+
+
+if [ "$PWD" != "/home/node/styk.tv" ]; then
+    rm -rf /home/node/styk.tv
+    mv ${PWD} /home/node/styk.tv
+    echo "Source directory moved to /home/node/styk.tv"
+    cd /home/node/styk.tv
+fi
+
+chown -R node /home/node/styk.tv
+
 rm /etc/udev/rules.d/80-nodedisk.rules || true
 rm /etc/init.d/node-encoding || true
 cd src/node
 rm nodetools/config.py
 rm -rf etc
-make gitinstall DESTDIR=/
+
+mkdir -p /var/www/volumes
+chown -R node /var/www/volumes
+
+
+ln -s ${PWD} ${DESTDIR}/opt/node
+mkdir -p ${DESTDIR}/opt/node/queue 
+echo "<queue />" > ${DESTDIR}/opt/node/queue/Queue.xml
+chmod ugo+x ${DESTDIR}/opt/node/debian/init.d
+cp -r ${DESTDIR}/opt/node/extra ${DESTDIR}/opt/node/etc
+ln -s ${DESTDIR}/opt/node/extra/80-nodedisk.rules ${DESTDIR}/etc/udev/rules.d
+ln -s ${DESTDIR}/opt/node/nodetools/prodconfig.py ${DESTDIR}/opt/node/nodetools/config.py
+ln -s ${DESTDIR}/opt/node/debian/init.d ${DESTDIR}/etc/init.d/node-encoding
+
+rm -f /etc/rc.local.orig
+mv -f /etc/rc.local /etc/rc.local.orig || true
+ln -s /opt/node/console.py /etc/rc.local
+chmod ugo+x /etc/rc.local
+
+
 /etc/init.d/node-encoding start
