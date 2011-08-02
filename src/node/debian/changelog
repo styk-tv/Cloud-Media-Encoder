@@ -1,4 +1,10 @@
-node-encoding (0.1) unstable; urgency=low
+stock-footage-node (0.2) unstable; urgency=low
+
+  * New release from master branch
+
+ -- Jakub Stachowski <jakub.stachowski@digisign.pl>  Tue, 02 Aug 2011 14:42:23 -0400
+
+stock-footage-node (0.1) unstable; urgency=low
 
   * Initial Release.
 
