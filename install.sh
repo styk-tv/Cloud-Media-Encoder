@@ -40,6 +40,7 @@ chown -R node /home/node/styk.tv
 
 rm /etc/udev/rules.d/80-nodedisk.rules || true
 rm /etc/init.d/node-encoding || true
+rm /etc/init.d/stock-footage-node || true
 cd src/node
 rm nodetools/config.py
 rm -rf etc
@@ -55,7 +56,7 @@ chmod ugo+x ${DESTDIR}/opt/node/debian/init.d
 cp -r ${DESTDIR}/opt/node/extra ${DESTDIR}/opt/node/etc
 ln -s ${DESTDIR}/opt/node/extra/80-nodedisk.rules ${DESTDIR}/etc/udev/rules.d
 ln -s ${DESTDIR}/opt/node/nodetools/prodconfig.py ${DESTDIR}/opt/node/nodetools/config.py
-ln -s ${DESTDIR}/opt/node/debian/init.d ${DESTDIR}/etc/init.d/node-encoding
+ln -s ${DESTDIR}/opt/node/debian/init.d ${DESTDIR}/etc/init.d/stock-footage-node
 
 rm -f /etc/rc.local.orig
 mv -f /etc/rc.local /etc/rc.local.orig || true
@@ -63,4 +64,4 @@ ln -s /opt/node/console.py /etc/rc.local
 chmod ugo+x /etc/rc.local
 
 
-/etc/init.d/node-encoding start
+/etc/init.d/stock-footage-node start
