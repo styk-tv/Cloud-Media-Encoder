@@ -1,0 +1,9 @@
+opt/node/encoders.py
+
+opt/node/nodetools/encoderlist.py
+opt/node/nodetools/ffmpeg.py
+opt/node/etc/Encoders.xml
+
+opt/node/modules/encoder.py
+opt/node/modules/mediainfo.py
+opt/node/modules/thumbs.py

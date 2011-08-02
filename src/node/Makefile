@@ -1,9 +1,9 @@
 default:
 	
 install:
-	cp *.py ${DESTDIR}/opt/node
-	mkdir ${DESTDIR}/opt/node/nodetools
+	mkdir -p ${DESTDIR}/opt/node/nodetools
 	mkdir ${DESTDIR}/opt/node/modules
+	cp *.py ${DESTDIR}/opt/node
 	cp nodetools/*.py ${DESTDIR}/opt/node/nodetools
 	cp modules/*.py ${DESTDIR}/opt/node/modules
 	mkdir ${DESTDIR}/opt/node/queue
