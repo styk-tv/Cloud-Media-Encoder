@@ -7,7 +7,7 @@ Standards-Version: 3.8.4
 Homepage: http://wiki.styk.tv/index.php/Main_Page
 
 Package: stock-footage-node
-Architecture: any
+Architecture: all
 Depends: ${misc:Depends}, python, openssh-server, python-daemon, python-psutil, python-paramiko, python-m2crypto, nginx
 Description: Styk.Tv API
  Styk.tv API is an Open Source software agent for processing and publishing of stock footage video assets. 
