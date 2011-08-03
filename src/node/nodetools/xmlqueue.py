@@ -122,6 +122,9 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
     nodes=[node for node in nodes if self._getStatus(node)<>status]
     return (doc, nodes)
     
+  def clearAll(self):
+      with open(self.target, "w") as f: f.write("<queue/>")
+      return 0
   def clear(self, status):
     (doc, nodes)=self._filterQueue(status)
     for node in nodes: doc.documentElement.removeChild(node)

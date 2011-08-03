@@ -48,7 +48,8 @@ def main():
             return xmlmsg("result", "OK")
         elif action=="clear":
             if len(sys.argv)<3: raise Exception("Usage: queue.py clear <status>")
-            ret=queue.clear(int(sys.argv[2]))
+            if sys.argv[2].lower()=="all": ret=queue.clearAll()
+            else: ret=queue.clear(int(sys.argv[2]))
             return xmlmsg("result", str(ret))
         else: raise Exception("Usage: stores.py <list>|<create>|<remove>|<retry>")
     except Exception, e:
