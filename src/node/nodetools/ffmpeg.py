@@ -48,7 +48,9 @@ class FileInfo:
         while ff.returncode==None:
             out=ff.communicate()[1]
             for ret in out.splitlines():
-                if ret.startswith("  Duration:"): this.duration=this.parseDuration(ret)
+                if ret.startswith("  Duration:"): 
+                    this.duration=this.parseDuration(ret)
+                    if this.frames<>0: this.frames=this.computeFrames()
                 if ret.find("Stream #0")!=-1 and ret.find("Video")!=-1:
                     m=FileInfo.darregexp.search(ret)
                     (this.width, this.height)=this.parseSize(ret)
@@ -57,7 +59,7 @@ class FileInfo:
                     else: 
                         this.aspect=float(this.width)/float(this.height)
                     this.fps=this.parseFps(ret)
-                    this.frames=this.computeFrames()
+                    if this.frames<>0: this.frames=this.computeFrames()
         ff.wait()
     def parseSize(this,line):
         for token in line.split(","):
@@ -93,7 +95,8 @@ class FFmpegHandler(object):
     def run(this):
         xargs=this.commonargs[:]+[this.outfile]
         print xargs
-        ff=subprocess.Popen(args=xargs, executable="ffmpeg" )#,   stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+        ff=subprocess.Popen(args=xargs, executable="ffmpeg" ,   stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+        this.process(ff)
         ret=ff.wait()
         if ret!=0:
             raise Exception("FFMpeg could not process the file");
@@ -103,7 +106,6 @@ class FFmpegHandler(object):
             l=ff.stdout.read(32)
             if len(l)==0: break
             buf+=l
-            print l
             while buf.find("\r")!=-1:
                 i=buf.find("\r")
                 ret=buf[:i-1]

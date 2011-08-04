@@ -88,9 +88,12 @@ class MoveExecutor(AbstractTaskExecutor):
         sftp = paramiko.SFTPClient.from_transport(transport)
         self.destdir=self.targetstore.findAsset(self.task.attributes["destAssetItem"])
         sftp_makedirs(self.destdir+".tmp", sftp)
-        for f in listdir(self.srcasset):
+        files=listdir(self.srcasset)
+        i=0.0
+        for f in files:
             sftp.put(self.srcasset+"/"+f, self.destdir+".tmp/"+f)
-        # FIXME: progress
+            i=i+1
+            self.updateProgress(i/len(files)*99)
         sftp.rename(self.destdir+".tmp", self.destdir)
         transport.close()
         rmtree(self.srcasset)

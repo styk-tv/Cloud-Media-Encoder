@@ -51,13 +51,12 @@ class EncoderExecutor(AbstractTaskExecutor):
         
     def progressCb(self, progress):
         self.reporter.setQueueProperty(self.workflow, self.task, "frame", str(progress))
-        self.reporter.setQueueProperty(self.workflow, self.task, "progress", str(progress*100.0/self.frames))
+        self.reporter.setQueueProperty(self.workflow, self.task, "progress",  "%.2f" % (progress*100.0/self.frames))
     def run(self):
         fi=FileInfo(self.srcfile)
         self.frames=fi.frames
         self.reporter.setQueueProperty(self.workflow, self.task, "all_frames", str(fi.frames))
         
-        #FIXME: progress!
         fmpg=VideoFFmpegHandler(self.eparams,   self.srcfile, self.outfile,  fi.frames, self.progressCb)
         fmpg.run()
         
