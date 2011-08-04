@@ -25,7 +25,11 @@ from nodetools.config import Config
 import sys
 from nodetools.xmlqueue import XMLJobManager
 
+def cls():
+    print("\x1B[2J")
+
 def main_menu():
+    cls()
     a=XMLJobManager()
     status=a.listByStatus()
     
@@ -35,10 +39,12 @@ def main_menu():
     print
     print "WORKFLOWS: ", status[0], " pending, ", status[1], " processing, ", status[2], " finished, ",  status[3], " failed"
     print
-    print "1) Network setting"
+    print "1) Network settings"
     print "2) Change root password"
     print "3) Change node password"
     print "4) Exit"
+    print
+    sys.stdout.write("Enter choice: ")
     
     return sys.stdin.readline().strip()
     
@@ -48,6 +54,8 @@ def network_menu():
     print "1) Use DHCP"
     print "2) Use static configuration"
     print "3) Exit"
+    print
+    sys.stdout.write("Enter choice: ")
     return sys.stdin.readline().strip()
 
 def readStaticSettings():
@@ -95,7 +103,9 @@ def main():
         if opt=="1": network_settings()
         elif opt=="2": root_pwd()
         elif opt=="3": node_pwd()
-        elif opt=="4": return
+        elif opt=="4": 
+            print "Console can be opened again by running /etc/rc.local"
+            return
         
 
 if __name__=="__main__":
