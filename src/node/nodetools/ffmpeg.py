@@ -50,7 +50,7 @@ class FileInfo:
             for ret in out.splitlines():
                 if ret.startswith("  Duration:"): 
                     this.duration=this.parseDuration(ret)
-                    if this.frames<>0: this.frames=this.computeFrames()
+                    if this.frames==0: this.frames=this.computeFrames()
                 if ret.find("Stream #0")!=-1 and ret.find("Video")!=-1:
                     m=FileInfo.darregexp.search(ret)
                     (this.width, this.height)=this.parseSize(ret)
@@ -59,7 +59,7 @@ class FileInfo:
                     else: 
                         this.aspect=float(this.width)/float(this.height)
                     this.fps=this.parseFps(ret)
-                    if this.frames<>0: this.frames=this.computeFrames()
+                    if this.frames==0: this.frames=this.computeFrames()
         ff.wait()
     def parseSize(this,line):
         for token in line.split(","):
@@ -110,6 +110,7 @@ class FFmpegHandler(object):
                 i=buf.find("\r")
                 ret=buf[:i-1]
                 buf=buf[i+1:]
+                print ret
                 if not ret.startswith("frame=") or this.frames==0: continue
                 this.progressCb(int(ret[6:11].strip()))
 
