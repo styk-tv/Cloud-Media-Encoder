@@ -27,6 +27,11 @@ from datetime import datetime
 import os
 import modules
 
+DATEFORMAT="%d/%m/%Y %H:%M:%S"
+
+def now():
+    return datetime.utcnow().strftime(DATEFORMAT)
+
 class XMLTask(Task):
   def __init__(self,element):
     super(XMLTask,self).__init__(element.getAttribute("guid"),element.getAttribute("action"))
@@ -105,8 +110,8 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
       wfnode.setAttribute("progress", str(progress))
       dstart=wfnode.getAttribute("dateStart")
       if status==ST_ERROR: wfnode.setAttribute("errorMessage",str(message))
-      if len(dstart)==0: wfnode.setAttribute("dateStart",  datetime.now().ctime())
-      if status==ST_PENDING or status==ST_FINISHED: wfnode.setAttribute("dateCompleted", datetime.now().ctime())
+      if len(dstart)==0: wfnode.setAttribute("dateStart",  now())
+      if status==ST_PENDING or status==ST_FINISHED: wfnode.setAttribute("dateCompleted", now())
       with open(self.target, "w") as f: doc.writexml(f)
       
   def _filterQueue(self, status):
