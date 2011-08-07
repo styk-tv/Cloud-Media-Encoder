@@ -51,7 +51,8 @@ class EncoderExecutor(AbstractTaskExecutor):
         
     def progressCb(self, progress):
         self.reporter.setQueueProperty(self.workflow, self.task, "frame", str(progress))
-        self.reporter.setQueueProperty(self.workflow, self.task, "progress",  "%.2f" % (progress*100.0/self.frames))
+        self.updateProgress(progress*100.0/self.frames)
+ #       self.reporter.setQueueProperty(self.workflow, self.task, "progress",  "%.2f" % (progress*100.0/self.frames))
     def run(self):
         fi=FileInfo(self.srcfile)
         self.frames=fi.frames

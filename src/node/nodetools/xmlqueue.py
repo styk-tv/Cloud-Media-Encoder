@@ -90,11 +90,6 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
     return None
   def releaseWorkflow(self,workflow):
       pass
-#    (doc, wfnode)=self._getWorkflowElement(workflow)
-  #  if wfnode<>None:
-    #    doc.documentElement.removeChild(wfnode)
-      #  with open(self.target, "w") as f: doc.writexml(f)
-       # return
   def setCurrent(self,workflow, task):
       pass
   def setQueueProperty(self, workflow, task, property, value):
@@ -107,7 +102,7 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
       (doc, wfnode)=self._getWorkflowElement(workflow)
       if task<>None: wfnode=self._getTaskElement(wfnode, task)
       wfnode.setAttribute('status', str(status))
-      wfnode.setAttribute("progress", str(progress))
+      wfnode.setAttribute("progress", "%.2f" % progress)
       dstart=wfnode.getAttribute("dateStart")
       if status==ST_ERROR: wfnode.setAttribute("errorMessage",str(message))
       if len(dstart)==0: wfnode.setAttribute("dateStart",  now())

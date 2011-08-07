@@ -12,6 +12,19 @@
 	/>
 -->
 
+   <task guid="task4" action="ENCODE"
+      srcStore="store2"
+      url="http://admin.juzou.tv/mobile/Extremists-176.mp4"
+      destAssetItemType="ts"
+      srcAssetItem="abvc2"
+      srcAssetItemType="xs"
+      dateStart=""
+      encoder="mp4encoder"
+      destAssetItem="abvcx"
+      destStore="store2"
+	/>  
+    
+
    <task guid="task1" action="DOWNLOAD"
       srcStore="store1"
       url="http://admin.juzou.tv/mobile/Extremists-176.mp4"
@@ -21,6 +34,18 @@
       dateStart=""
       encoder="th1"
       destAssetItem="abvc"
+      destStore="store2"
+	/>  
+
+   <task guid="task2" action="DOWNLOAD"
+      srcStore="store1"
+      url="http://admin.juzou.tv/mobile/Extremists-176.mp4"
+      destAssetItemType="xs"
+      srcAssetItem="asset1"
+      srcAssetItemType="ts"
+      dateStart=""
+      encoder="th1"
+      destAssetItem="abvc2"
       destStore="store2"
 	/>  
 

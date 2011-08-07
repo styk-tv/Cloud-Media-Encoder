@@ -51,10 +51,12 @@ class AbstractTaskExecutor(object):
     self.workflow=workflow
     self.task=task
     self.reporter=reporter
+    self.taskNr=self.workflow.tasks.index(self.task)
   def run(self):
     pass
   def updateProgress(self, progress):
     self.reporter.setStatus(ST_WORKING, progress, "Working", self.workflow, self.task)
+    self.reporter.setStatus(ST_WORKING,100.0*self.taskNr/len(self.workflow.tasks)+progress/len(self.workflow.tasks),"Working",self.workflow)
     
 class WorkflowManager(object):
   def __init__(self):
@@ -101,7 +103,6 @@ class Queue:
         logging.info("Finished task "+task.id)
         self.reporter.setStatus(ST_FINISHED,100,"FINISHED",workflow,task)
         i=i+1
-        self.reporter.setStatus(ST_WORKING,100.0*i/len(workflow.tasks),"WORKING",workflow)
       except Exception,e:
         self.reporter.setStatus(ST_ERROR,100,e,workflow,task)
         self.reporter.setStatus(ST_ERROR,100,e,workflow)
