@@ -113,13 +113,3 @@ class FFmpegHandler(object):
                 print ret
                 if not ret.startswith("frame=") or this.frames==0: continue
                 this.progressCb(int(ret[6:11].strip()))
-
-class VideoFFmpegHandler(FFmpegHandler):
-    def __init__(this, eparams ,  localfile,  outfile, frames, progressCb):
-        super(VideoFFmpegHandler, this).__init__(eparams, localfile, outfile, frames, progressCb)
-        this.commonargs+=[ "-vcodec", this.eparams.vcodec]
-        if len(eparams.extraparams)>0: this.commonargs+=eparams.extraparams.split(" ")
-        if this.eparams.fps>0: this.commonargs+=["-r", str(this.eparams.fps)]
-        if this.eparams.width>0 and this.eparams.height>0: this.commonargs+=["-s", str(this.eparams.width)+"x"+str(this.eparams.height)]
-        this.commonargs+=[ "-b", str(this.eparams.bitrate)]
-        this.commonargs+=["-acodec", this.eparams.acodec, "-ac","2","-ar", "44100", "-ab",str(this.eparams.audiobitrate)]

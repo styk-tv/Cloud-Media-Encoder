@@ -22,14 +22,28 @@ from nodetools.xmlqueue import XMLJobManager
 from nodetools.abstractqueue import AbstractTaskExecutor,Queue, ST_WORKING
 from nodetools.encoderlist import EncodersList
 from nodetools.localstores import LocalStoreList
-from nodetools.ffmpeg import VideoFFmpegHandler, FileInfo
+from nodetools.ffmpeg import FFmpegHandler, FileInfo
 from shutil import rmtree
+from nodetools.config import Config
 import os
 import re
 import subprocess
 import daemon
 import sys
 
+
+class VideoFFmpegHandler(FFmpegHandler):
+    def __init__(this, eparams ,  localfile,  outfile, frames, progressCb):
+        super(VideoFFmpegHandler, this).__init__(eparams, localfile, outfile, frames, progressCb)
+        this.commonargs+=[ "-vcodec", this.eparams.vcodec]
+        if len(eparams.extraparams)>0: this.commonargs+=eparams.extraparams.split(" ")
+        if this.eparams.fps>0: this.commonargs+=["-r", str(this.eparams.fps)]
+        if this.eparams.width>0 and this.eparams.height>0: this.commonargs+=["-s", str(this.eparams.width)+"x"+str(this.eparams.height)]
+        if this.eparams.watermarkFile<>"":
+            filter="movie="+Config.CONFIGDIR+"/"+this.eparams.watermarkFile+" [wm]; [in][wm] overlay="+str(this.eparams.watermarkX)+":"+str(this.eparams.watermarkY)+" [out]"
+            this.commonargs+=["-vf", filter]
+        this.commonargs+=[ "-b", str(this.eparams.bitrate)]
+        this.commonargs+=["-acodec", this.eparams.acodec, "-ac","2","-ar", "44100", "-ab",str(this.eparams.audiobitrate)]
 
 
 class EncoderExecutor(AbstractTaskExecutor):
