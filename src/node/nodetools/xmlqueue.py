@@ -102,7 +102,7 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
       (doc, wfnode)=self._getWorkflowElement(workflow)
       if task<>None: wfnode=self._getTaskElement(wfnode, task)
       wfnode.setAttribute('status', str(status))
-      wfnode.setAttribute("progress", "%.2f" % progress)
+      wfnode.setAttribute("progress", "%d" % progress)
       dstart=wfnode.getAttribute("dateStart")
       if status==ST_ERROR: wfnode.setAttribute("errorMessage",str(message))
       if len(dstart)==0: wfnode.setAttribute("dateStart",  now())
