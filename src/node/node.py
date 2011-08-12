@@ -24,8 +24,10 @@ from nodetools.xmlqueue import XMLJobManager
 from nodetools.abstractqueue import AbstractTaskExecutor,Queue, ST_WORKING
 from nodetools.localstores import LocalStoreList
 from nodetools.config import Config
+from nodetools import processtools
 from shutil import rmtree
 import os
+from nodetools.pidlockfile import PIDLockFile
 import re
 import pwd
 import grp
@@ -54,12 +56,42 @@ def drop_privileges(uid_name='nobody', gid_name='nogroup'):
         
 def main():
   drop_privileges(Config.USER)
-  jman=XMLJobManager()
-  jman.registerPlugins()
-  queue=Queue(jman)
-  queue.run()
+  with PIDLockFile(Config.CONFIGDIR+"/node.pid"):
+      jman=XMLJobManager()
+      jman.registerPlugins()
+      queue=Queue(jman)
+      queue.run()
 
-if len(sys.argv)>1 and sys.argv[1]=="-d": main()
-else: 
+def foreground_run():
+    if processtools.is_running():
+        print "Node is already running"
+        sys.exit(1)
+    main()
+
+def try_start():
+    if processtools.is_running():
+        print "Node is already running"
+        sys.exit(1)
     with daemon.DaemonContext():
-	main()
+        main()
+    
+def try_stop():
+    if not processtools.is_running():
+        print "Node is not running"
+        sys.exit(1)
+    processtools.stop()
+
+def check_running():
+    ret=3
+    if processtools.is_running(): ret=0
+    sys.exit(ret)
+
+if len(sys.argv)>1:
+    if sys.argv[1]=="start": try_start()
+    elif sys.argv[1]=="stop": try_stop()
+    elif sys.argv[1]=="check":  check_running()
+    elif sys.argv[1]=="run": foreground_run()
+    else: 
+	print "Usage: node.py start|stop|check|run"
+	sys.exit(1)
+

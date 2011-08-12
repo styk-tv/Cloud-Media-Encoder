@@ -30,6 +30,7 @@ case "$1" in
     fi
     mkdir -p /var/www/volumes
     chown node /var/www/volumes
+    chown node /opt/node/etc
     
     ;;
 
