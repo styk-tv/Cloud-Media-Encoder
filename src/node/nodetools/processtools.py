@@ -34,7 +34,7 @@ def is_http_running():
 	    pid=pidf.read().strip()
     except:
         return False
-    return id_exists(pid)
+    return pid_exists(pid)
     
 def stop():
     pid=get_pid()

@@ -37,14 +37,17 @@ def main_menu():
     a=XMLJobManager()
     status=a.listByStatus()
     running=processtools.is_running()
-    idle=status[1]==0
+    if running==False: idle=""
+    elif status[1]==0: idle="(idle)"
+    else: idle="(processing)"
+    
     httprunning=processtools.is_http_running()
     
     print "(c) 2011 Node Styk.Tv v0.2 ", version.commit, " (", version.date+")"
     print "Node ID:",  version.nodeid
     print "IP: ", pwdtools.getMainIp(), "  (", pwdtools.getIfaceType()+")"
     print
-    print "Node is running: ",   running,  "idle ", idle,  " HTTP server is running: ", httprunning
+    print "Node is running: ",   running,  idle,  " HTTP server is running: ", httprunning
     print "WORKFLOWS: ", status[0], " pending, ", status[1], " processing, ", status[2], " finished, ",  status[3], " failed"
     print
     print "1) Network settings"
