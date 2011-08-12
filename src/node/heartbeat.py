@@ -25,11 +25,22 @@ import psutil
 from xml.dom.minidom import getDOMImplementation
 from nodetools.tools import xmlmsg
 from nodetools.localstores import LocalStoreList
+from nodetools.processtools import is_running
+from nodetools.xmlqueue import XMLJobManager
 import sys
 from time import sleep
 
 def printStatus(out):
     doc=getDOMImplementation().createDocument(None, "status", None)
+    node=doc.createElement("node")
+    a=XMLJobManager()
+    status=a.listByStatus()
+    node.setAttribute("running", str(is_running()))
+    node.setAttribute("pending", str(status[0]))
+    node.setAttribute("processing", str(status[1]))
+    node.setAttribute("finished", str(status[2]))
+    node.setAttribute("failed", str(status[3]))
+    doc.documentElement.appendChild(node)
     mem=doc.createElement("memory")
     mem.setAttribute("total_physical", str(psutil.TOTAL_PHYMEM))
     mem.setAttribute("avail_physical", str(psutil.avail_phymem()))

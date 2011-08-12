@@ -65,33 +65,37 @@ def main():
 def foreground_run():
     if processtools.is_running():
         print "Node is already running"
-        sys.exit(1)
+        return 1
     main()
+    return 0
 
 def try_start():
     if processtools.is_running():
         print "Node is already running"
-        sys.exit(1)
+        return 1
     with daemon.DaemonContext():
         main()
+    return 0
     
 def try_stop():
     if not processtools.is_running():
         print "Node is not running"
-        sys.exit(1)
+        return 1
     processtools.stop()
+    return 0
 
 def check_running():
     ret=3
     if processtools.is_running(): ret=0
-    sys.exit(ret)
+    return ret
 
-if len(sys.argv)>1:
-    if sys.argv[1]=="start": try_start()
-    elif sys.argv[1]=="stop": try_stop()
-    elif sys.argv[1]=="check":  check_running()
-    elif sys.argv[1]=="run": foreground_run()
+if __name__=="__main__":
+    if len(sys.argv)>1:
+        if sys.argv[1]=="start":  sys.exit(try_start())
+        elif sys.argv[1]=="stop": sys.exit(try_stop())
+        elif sys.argv[1]=="check":  sys.exit(check_running())
+        elif sys.argv[1]=="run":  foreground_run()
     else: 
-	print "Usage: node.py start|stop|check|run"
-	sys.exit(1)
+            print "Usage: node.py start|stop|check|run"
+            sys.exit(1)
 

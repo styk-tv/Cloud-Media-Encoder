@@ -22,6 +22,9 @@
 from nodetools import version
 from nodetools import pwdtools
 from nodetools.config import Config
+from nodetools import processtools
+import node
+import os
 import sys
 from nodetools.xmlqueue import XMLJobManager
 
@@ -32,17 +35,23 @@ def main_menu():
     cls()
     a=XMLJobManager()
     status=a.listByStatus()
+    running=processtools.is_running()
     
     print "(c) 2011 Node Styk.Tv v0.2 ", version.commit, " (", version.date+")"
     print "Node ID:",  version.nodeid
     print "IP: ", pwdtools.getMainIp(), "  (", pwdtools.getIfaceType()+")"
     print
+    print "Node is running: ",   running
     print "WORKFLOWS: ", status[0], " pending, ", status[1], " processing, ", status[2], " finished, ",  status[3], " failed"
     print
     print "1) Network settings"
     print "2) Change root password"
     print "3) Change node password"
-    print "4) Exit"
+    if running:
+        print "4) Stop node"
+    else:
+        print "5) Start node"
+    print "0) Exit"
     print
     sys.stdout.write("Enter choice: ")
     
@@ -53,7 +62,7 @@ def network_menu():
     print
     print "1) Use DHCP"
     print "2) Use static configuration"
-    print "3) Exit"
+    print "0) Exit"
     print
     sys.stdout.write("Enter choice: ")
     return sys.stdin.readline().strip()
@@ -81,7 +90,7 @@ def network_settings():
             (ip, netmask, gateway, dns1, dns2)=readStaticSettings()
             pwdtools.setStatic(ip, gateway, netmask, dns1, dns2)
             pwdtools.restartNetwork()
-        elif opt=="3":
+        elif opt=="0":
             return
     
 def root_pwd():
@@ -103,7 +112,9 @@ def main():
         if opt=="1": network_settings()
         elif opt=="2": root_pwd()
         elif opt=="3": node_pwd()
-        elif opt=="4": 
+        elif opt=="4": node.try_stop()
+        elif opt=="5": os.system("python /opt/node/node.py start")
+        elif opt=="0": 
             print "Console can be opened again by running /etc/rc.local"
             return
         
