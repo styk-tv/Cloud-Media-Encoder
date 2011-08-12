@@ -28,6 +28,14 @@ def is_running():
 	return False
     return True
 
+def is_http_running():
+    try:
+        with open("/var/run/nginx.pid","r") as pidf:
+	    pid=pidf.read().strip()
+    except:
+        return False
+    return id_exists(pid)
+    
 def stop():
     pid=get_pid()
     if pid<>None: os.kill(int(pid),15)    

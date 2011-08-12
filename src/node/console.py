@@ -38,12 +38,13 @@ def main_menu():
     status=a.listByStatus()
     running=processtools.is_running()
     idle=status[1]==0
+    httprunning=processtools.is_http_running()
     
     print "(c) 2011 Node Styk.Tv v0.2 ", version.commit, " (", version.date+")"
     print "Node ID:",  version.nodeid
     print "IP: ", pwdtools.getMainIp(), "  (", pwdtools.getIfaceType()+")"
     print
-    print "Node is running: ",   running,  "idle ", idle
+    print "Node is running: ",   running,  "idle ", idle,  " HTTP server is running: ", httprunning
     print "WORKFLOWS: ", status[0], " pending, ", status[1], " processing, ", status[2], " finished, ",  status[3], " failed"
     print
     print "1) Network settings"
@@ -116,9 +117,11 @@ def main():
         elif opt=="3": node_pwd()
         elif opt=="4": 
             node.try_stop()
+            os.system("/etc/init.d/nginx stop")
             sleep(3)
         elif opt=="5": 
             os.system("python /opt/node/node.py start")
+            os.system("/etc/init.d/nginx start")
             sleep(3)
         elif opt=="0": 
             print "Console can be opened again by running /etc/rc.local"
