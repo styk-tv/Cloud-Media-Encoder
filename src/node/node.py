@@ -60,6 +60,8 @@ def main():
       jman=XMLJobManager()
       jman.registerPlugins()
       queue=Queue(jman)
+      # remove old interrupted tasks
+      jman.unfinishedToError()
       queue.run()
 
 def foreground_run():

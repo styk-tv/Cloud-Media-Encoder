@@ -104,8 +104,8 @@ class Queue:
         self.reporter.setStatus(ST_FINISHED,100,"FINISHED",workflow,task)
         i=i+1
       except Exception,e:
-        self.reporter.setStatus(ST_ERROR,100,e,workflow,task)
-        self.reporter.setStatus(ST_ERROR,100,e,workflow)
+        self.reporter.setStatus(ST_ERROR,0,e,workflow,task)
+        self.reporter.setStatus(ST_ERROR,0,e,workflow)
         logging.exception("Error during workflow "+workflow.id+" task "+task.id)
         self.jman.releaseWorkflow(workflow)
         return

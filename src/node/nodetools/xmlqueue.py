@@ -131,6 +131,11 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
     with open(self.target, "w") as f: doc.writexml(f)
     return len(nodes)
       
+  def unfinishedToError(self):
+    (doc, nodes)=self._filterQueue(ST_WORKING)
+    for node in nodes:
+        self.setStatus(ST_ERROR,0, "Node terminated", XMLWorkflow(node) )
+
   def listByStatus(self):
     ret={}
     ret[0]=0
