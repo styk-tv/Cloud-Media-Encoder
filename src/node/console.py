@@ -24,6 +24,7 @@ from nodetools import pwdtools
 from nodetools.config import Config
 from nodetools import processtools
 import node
+from time import sleep
 import os
 import sys
 from nodetools.xmlqueue import XMLJobManager
@@ -112,8 +113,12 @@ def main():
         if opt=="1": network_settings()
         elif opt=="2": root_pwd()
         elif opt=="3": node_pwd()
-        elif opt=="4": node.try_stop()
-        elif opt=="5": os.system("python /opt/node/node.py start")
+        elif opt=="4": 
+            node.try_stop()
+            sleep(3)
+        elif opt=="5": 
+            os.system("python /opt/node/node.py start")
+            sleep(3)
         elif opt=="0": 
             print "Console can be opened again by running /etc/rc.local"
             return
