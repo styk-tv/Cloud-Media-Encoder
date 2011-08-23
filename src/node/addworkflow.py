@@ -29,6 +29,9 @@ try:
     if workflow.documentElement.tagName<>"workflow": raise Exception("Root tag should be workflow")
     guid=workflow.documentElement.getAttribute("guid")
     doc=parse(open(Config.QUEUEDIR+"/Queue.xml","r"))
+    for wfnode in doc.getElementsByTagName("workflow"):
+      oldguid=wfnode.getAttribute("guid")
+      if guid==oldguid:  raise Exception("Duplicate workflow guid")
     doc.documentElement.appendChild(workflow.documentElement)
     doc.documentElement.setAttribute("dateStart", "")
     doc.documentElement.setAttribute("dateFinished", "")
