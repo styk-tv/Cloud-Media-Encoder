@@ -17,7 +17,7 @@ Description: Styk.Tv API
  
 Package: stock-footage-node-encoding
 Architecture: all
-Depends: stock-footage-node, ffmpeg (>= 5:0.6.1), mediainfo
+Depends: stock-footage-node, ffmpeg (>= 5:0.6.1), mediainfo, python-imaging
 Description: Encoding plugin for stock footage node
  Video encoding plugin for stock footage node. Uses ffmpeg
 

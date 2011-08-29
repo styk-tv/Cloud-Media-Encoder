@@ -12,7 +12,7 @@ fi
 
 echo "Installing dependencies"
 
-apt-get install --force-yes -y ffmpeg python openssh-server python-daemon python-psutil python-paramiko python-m2crypto nginx make python-pam mediainfo || exit 1 
+apt-get install --force-yes -y ffmpeg python openssh-server python-daemon python-psutil python-paramiko python-m2crypto nginx make python-pam mediainfo python-imaging || exit 1 
 
 DESTDIR=/
 
