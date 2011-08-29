@@ -112,4 +112,4 @@ class FFmpegHandler(object):
                 buf=buf[i+1:]
                 print ret
                 if not ret.startswith("frame=") or this.frames==0: continue
-                this.progressCb(int(ret[6:11].strip()))
+                if this.progressCb<>None: this.progressCb(int(ret[6:11].strip()))

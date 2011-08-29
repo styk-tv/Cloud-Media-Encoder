@@ -1,9 +1,9 @@
 <?xml version="1.0" ?><encoders>
         <encoder acodec="libmp3lame" audiobitrate="64000" bitrate="800000" extraparams="" fps="25" guid="mp4encoder" height="600" 
-            outputType="flv" type="ffmpeg_0612" vcodec="flv" version="2.15" width="800" watermarkFile="" watermarkX="30" watermarkY="30"/>
+            outputType="flv" type="ffmpeg_0612" vcodec="flv" version="2.15" width="800" watermarkFile="watermark.1.png" watermarkX="30" watermarkY="30"/>
         <encoder  guid="thencoder" height="200" width="800" outputType="jpg" type="ffmpeg_0612"  version="2.15" thCount="6"/>
         <encoder guid="C53F833BB2D6416380C1ABF051D43ED6" params="-vcodec copy -vbsf h264_mp4toannexb -an" type="ffmpeg_0612" version="2.16"/>
         <!-- 3 evenly spaced thumbnails -->
-        <thumbs type="ffmpeg_0612" version="2.15" width="200" height="150" guid="th1" outputType="jpg" thCount="2" />
+        <thumbs type="ffmpeg_0612" version="2.15" width="200" height="150" guid="th1" outputType="png" thCount="2" borderWidth="2" borderRadius="15" />
 
 </encoders>

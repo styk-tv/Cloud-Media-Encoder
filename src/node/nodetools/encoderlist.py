@@ -27,14 +27,19 @@ def getAttributeDef(element, name, default):
     if element.hasAttribute(name): return element.getAttribute(name)
     else: return default
 
-class EncoderParams:
+class EncoderParamsBase(object):
   def __init__(self,element):
     self.id=element.getAttribute("guid")
     self.element=element
     self.type=element.getAttribute("type")
-    self.extraparams=getAttributeDef(element, "extraparams", "")
     self.width=int(getAttributeDef(element, "width", 0))
     self.height=int(getAttributeDef(element, "height", 0))
+    self.extraparams=getAttributeDef(element, "extraparams", "")
+    self.outputtype=getAttributeDef(element, "outputType", "mp4")
+
+class EncoderParams(EncoderParamsBase):
+  def __init__(self, element):
+    super(EncoderParams, self).__init__(element)
     self.bitrate=getAttributeDef(element, "bitrate", 1000000)
     self.fps=getAttributeDef(element, "fps",0)
     self.watermarkFile=getAttributeDef(element, "watermarkFile", "")
@@ -43,9 +48,14 @@ class EncoderParams:
     self.audiobitrate=getAttributeDef(element, "audiobitrate", 64000)
     self.vcodec=getAttributeDef(element, "vcodec", "libx264")
     self.acodec=getAttributeDef(element, "acodec", "aac")
-    self.outputtype=getAttributeDef(element, "outputType", "mp4")
+class ThumbnailerParams(EncoderParamsBase):
+  def __init__(self, element):
+    super(ThumbnailerParams, self).__init__(element)
     self.thumbsCount=int(getAttributeDef(element, "thCount", "0"))
     self.thumbsInterval=float(getAttributeDef(element, "thInterval","0"))
+    self.borderWidth=int(getAttributeDef(element, "borderWidth","0"))
+    self.borderColor=getAttributeDef(element, "borderColor", "#808080")
+    self.borderRadius=int(getAttributeDef(element, "borderRadius", "0"))
     
 class EncodersList(object):
   def __init__(self, path=Config.CONFIGDIR+"/Encoders.xml"):
@@ -58,7 +68,7 @@ class EncodersList(object):
       encoder=EncoderParams(elm)
       self.encoders[encoder.id]=encoder
     for elm in self.doc.getElementsByTagName("thumbs"): 
-      encoder=EncoderParams(elm)
+      encoder=ThumbnailerParams(elm)
       self.encoders[encoder.id]=encoder
  
   def save(self):
@@ -80,8 +90,10 @@ class EncodersList(object):
 
   def create(self, indoc):
     elm=parse(indoc).documentElement
-    if elm.nodeName<>"encoder" and elm.nodeName<>"thumbs": raise Exception("Wrong format")
     if not elm.hasAttribute("guid"): elm.setAttribute("guid",  uuid4().get_hex())
+    if elm.nodeName=="encoder": ep=EncoderParams(elm)
+    elif elm.nodeName=="thumbs":  ep=ThumbnailerParams(elm)
+    else: raise Exception("Wrong format")
     ep=EncoderParams(elm)
     if ep.type<>"ffmpeg_0612": raise Exception("Unknown encoder type")
     self.doc.documentElement.appendChild(elm)
