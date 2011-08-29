@@ -21,6 +21,7 @@
 from xml.dom.minidom import getDOMImplementation, parse
 from config import Config
 import os
+from tools import LockedFile
 
 def freespace(p):
     s = os.statvfs(p)
@@ -65,7 +66,7 @@ class Disk:
 class StoreList(object):
   def __init__(self, path=Config.CONFIGDIR+"/Stores.xml"):
     if os.path.exists(path):
-        with open(path,'r') as f: self.doc=parse(f)
+        with LockedFile(path,'r') as f: self.doc=parse(f)
     else: self.doc=getDOMImplementation().createDocument(None, "stores", None)
     self.stores={}
     self.target=path

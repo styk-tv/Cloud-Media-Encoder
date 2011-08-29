@@ -24,7 +24,7 @@ import os
 from uuid import uuid4
 from shutil import rmtree
 from storelist import StoreList
-from tools import tools
+from tools import tools, LockedFile
 
 # <store disk="GUID" type="TYPE" vhost="host" port="port" />
 
@@ -49,7 +49,7 @@ class LocalStoreList(StoreList):
     super(LocalStoreList, self).__init__(path)
     
   def save(self):
-    with open(self.target, "w") as f: self.doc.writexml(f)
+    with LockedFile(self.target, "w") as f: self.doc.writexml(f)
   def add(self,disk,type):
     uuid=uuid4().get_hex()
     diskobj=self.getDisk(disk)

@@ -21,21 +21,23 @@
 
 from xml.dom.minidom import getDOMImplementation,parse
 from nodetools.config import Config
-from nodetools.tools import xmlmsg
+from nodetools.tools import xmlmsg,  LockedFile
 import sys
 
 try:
     workflow=parse(sys.stdin)
     if workflow.documentElement.tagName<>"workflow": raise Exception("Root tag should be workflow")
     guid=workflow.documentElement.getAttribute("guid")
-    doc=parse(open(Config.QUEUEDIR+"/Queue.xml","r"))
+    with LockedFile(Config.QUEUEDIR+"/Queue.xml","r") as f:
+        doc=parse(f)
     for wfnode in doc.getElementsByTagName("workflow"):
       oldguid=wfnode.getAttribute("guid")
       if guid==oldguid:  raise Exception("Duplicate workflow guid")
     doc.documentElement.appendChild(workflow.documentElement)
     doc.documentElement.setAttribute("dateStart", "")
     doc.documentElement.setAttribute("dateFinished", "")
-    doc.writexml(open(Config.QUEUEDIR+"/Queue.xml","w"))
+    with LockedFile(Config.QUEUEDIR+"/Queue.xml","w") as f:
+        doc.writexml(f)
     xmlmsg("result", guid)
 except Exception, e:
     xmlmsg("error", str(e))

@@ -22,6 +22,8 @@ from xml.dom.minidom import getDOMImplementation
 import sys
 from signal import SIGHUP
 import os
+import fcntl
+from contextlib import *
 from grp import getgrnam
 from pwd import getpwnam
 
@@ -145,4 +147,17 @@ class tools:
     os.chown(path, _user, _group)
 
 
-    
+@contextmanager
+def LockedFile(target, type):
+    lock=None
+    file=None
+    try:
+        lock=open(target, "r")
+        ltype=fcntl.LOCK_EX
+        if type=="r": ltype=fcntl.LOCK_SH
+        fcntl.flock(lock, ltype)
+        file=open(target, type)
+        yield file
+    finally:
+        if file<>None: file.close()
+        if lock<>None: lock.close()

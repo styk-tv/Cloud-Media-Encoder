@@ -26,12 +26,14 @@ from config import Config
 from datetime import datetime
 import os
 import modules
+from tools import LockedFile
 
 DATEFORMAT="%d/%m/%Y %H:%M:%S"
 
 def now():
     return datetime.utcnow().strftime(DATEFORMAT)
 
+    
 class XMLTask(Task):
   def __init__(self,element):
     super(XMLTask,self).__init__(element.getAttribute("guid"),element.getAttribute("action"))
@@ -66,19 +68,22 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
     self.target=target
      
   def getNextWorkflow(self):
-    doc=parse(open(self.target,"r"))
+    doc=self.load()
     for wfnode in doc.getElementsByTagName("workflow"):
       if len(wfnode.getAttribute("dateStart"))>0: continue
       wflow=XMLWorkflow(wfnode)
       if wflow.isSourceReady(): return wflow  
     return None
   def load(self):
-    with open(self.target, "r") as f: doc=parse(f)
-    return doc
+    with LockedFile(self.target, "r") as f:
+        return parse(f)
+  def save(self, doc):
+    with LockedFile(self.target, "w") as f:
+        doc.writexml(f)
   def getProgressReporter(self):
       return self
   def _getWorkflowElement(self, workflow):
-    with open(self.target, "r") as f: doc=parse(f)
+    doc=self.load()
     for wfnode in doc.getElementsByTagName("workflow"):
       guid=wfnode.getAttribute("guid")
       if guid==workflow.id:  return (doc, wfnode)
@@ -96,7 +101,7 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
       (doc, wfnode)=self._getWorkflowElement(workflow)
       if task<>None: wfnode=self._getTaskElement(wfnode, task)
       wfnode.setAttribute(property, value)
-      with open(self.target, "w") as f: doc.writexml(f)
+      self.save(doc)
       
   def  setStatus(self, status,progress,message, workflow, task=None):
       (doc, wfnode)=self._getWorkflowElement(workflow)
@@ -107,28 +112,28 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
       if status==ST_ERROR: wfnode.setAttribute("errorMessage",str(message))
       if len(dstart)==0: wfnode.setAttribute("dateStart",  now())
       if status==ST_PENDING or status==ST_FINISHED: wfnode.setAttribute("dateCompleted", now())
-      with open(self.target, "w") as f: doc.writexml(f)
+      self.save(doc)
       
   def _filterQueue(self, status):
-    with open(self.target, "r") as f: doc=parse(f)
+    doc=self.load()
     nodes=doc.getElementsByTagName("workflow")
     nodes=[node for node in nodes if status==None or self._getStatus(node)==status]
     return (doc, nodes)
 
   def _filterQueueNeq(self, status):
-    with open(self.target, "r") as f: doc=parse(f)
+    doc=self.load()
     nodes=doc.getElementsByTagName("workflow")
     if status==None: return (doc, [])
     nodes=[node for node in nodes if self._getStatus(node)<>status]
     return (doc, nodes)
     
   def clearAll(self):
-      with open(self.target, "w") as f: f.write("<queue/>")
+      with LockedFile(self.target, "w") as f: f.write("<queue/>")
       return 0
   def clear(self, status):
     (doc, nodes)=self._filterQueue(status)
     for node in nodes: doc.documentElement.removeChild(node)
-    with open(self.target, "w") as f: doc.writexml(f)
+    self.save(doc)
     return len(nodes)
       
   def unfinishedToError(self):
@@ -142,7 +147,7 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
     ret[1]=0
     ret[2]=0
     ret[3]=0
-    with open(self.target, "r") as f: doc=parse(f)
+    doc=self.load()
     nodes=doc.getElementsByTagName("workflow")
     for node in nodes:
         st=self._getStatus(node)
@@ -158,7 +163,7 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
               if self._getTaskElement(wfnode, t)<>None: break
               doc.documentElement.removeChild(wfnode)
       for i in wfnodes: doc.documentElement.removeChild(i)
-      doc.writexml(out)
+      self.save(doc)
   def _getStatus(self, wfnode):
       status=0
       if wfnode.hasAttribute("status"): status=int(wfnode.getAttribute("status"))
@@ -167,7 +172,7 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
     (doc, wfnode)=self._getWorkflowElement(Workflow(guid))
     if wfnode==None: raise Exception("Unknown workflow")
     doc.documentElement.removeChild(wfnode)
-    with open(self.target, "w") as f: doc.writexml(f)
+    self.save(doc)
       
   def retryWorkflow(self, guid):
     (doc, wfnode)=self._getWorkflowElement(Workflow(guid))
@@ -178,7 +183,7 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
     if status<>ST_ERROR and status<>ST_FINISHED: raise Exception("Workflow not finished yet")
     self._resetProgress(wfnode)
     for node in wfnode.getElementsByTagName("task"): self._resetProgress(node)
-    with open(self.target, "w") as f: doc.writexml(f)
+    self.save(doc)
       
   def _resetProgress(self, wfnode):
     wfnode.setAttribute("status", "0")
