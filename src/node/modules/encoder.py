@@ -22,7 +22,7 @@ from nodetools.xmlqueue import XMLJobManager
 from nodetools.abstractqueue import AbstractTaskExecutor,Queue, ST_WORKING
 from nodetools.encoderlist import EncodersList
 from nodetools.localstores import LocalStoreList
-from nodetools.ffmpeg import FFmpegHandler, FileInfo
+from nodetools.ffmpeg import FFmpegHandler, FileInfo,  getFFPath
 from shutil import rmtree
 from nodetools.config import Config
 import os
@@ -39,11 +39,32 @@ class VideoFFmpegHandler(FFmpegHandler):
         if len(eparams.extraparams)>0: this.commonargs+=eparams.extraparams.split(" ")
         if this.eparams.fps>0: this.commonargs+=["-r", str(this.eparams.fps)]
         if this.eparams.width>0 and this.eparams.height>0: this.commonargs+=["-s", str(this.eparams.width)+"x"+str(this.eparams.height)]
-        if this.eparams.watermarkFile<>"":
-            filter="movie="+Config.CONFIGDIR+"/"+this.eparams.watermarkFile+" [wm]; [in][wm] overlay="+str(this.eparams.watermarkX)+":"+str(this.eparams.watermarkY)+" [out]"
-            this.commonargs+=["-vf", filter]
+        this.commonargs+=this.handleWatermark()
+        
+            
         this.commonargs+=[ "-b", str(this.eparams.bitrate)]
         this.commonargs+=["-acodec", this.eparams.acodec, "-ac","2","-ar", "44100", "-ab",str(this.eparams.audiobitrate)]
+    def handleWatermark(this):
+        fps=None
+        if this.eparams.watermarkFile<>"":
+            path=Config.CONFIGDIR+"/"+this.eparams.watermarkFile
+        elif this.eparams.watermarkAsset<>"":
+            slist=LocalStoreList()
+            store=slist.getByUuid(this.eparams.watermarkStore)
+            (ext, fps)=store.decodeAssetType(this.eparams.watermarkAssetType)
+            path=getFFPath(store, this.eparams.watermarkAsset, this.eparams.watermarkAssetType)
+        if fps==None: return this.handleSingleWatermark(path)
+        else: return this.handleAnimatedWatermark(path, fps)
+
+    def handleSingleWatermark(this, path):
+            filter="movie="+path+" [wm]; [in][wm] overlay="+str(this.eparams.watermarkX)+":"+str(this.eparams.watermarkY)+" [out]"
+            return ["-vf", filter]
+    def handleAnimatedWatermark(this, path, fps):
+            filter="setpts=PTS-STARTPTS [main]; movie="+path+" [wm];[wm]settb=1[wm];[wm]setpts="+str(this.eparams.watermarkStart)+"*TB+N/("+str(fps)+"*TB)[wm];[main][wm] overlay="+str(this.eparams.watermarkX)+":"+str(this.eparams.watermarkY)+ " [out]"
+            return ["-vf", filter]
+        
+        
+        
 
 
 class EncoderExecutor(AbstractTaskExecutor):

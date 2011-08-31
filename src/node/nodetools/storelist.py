@@ -45,6 +45,11 @@ class Store:
   def findAsset(self,assetId):
     return self.path+"/"+assetId[0]+"/"+assetId[1]+"/"+assetId
   
+  # decode asset type into extension and fps. If FPS is not none, this is multi-image asset
+  def decodeAssetType(self, type):
+      t=type.split(":")
+      if len(t)==1 or t[0]<>"multi": return (type, None)
+      else: return (t[1], t[2])
   # returns path to main asset file
   def findAssetFile(self,assetId,extension):
     return self.findAsset(assetId)+"/"+assetId+"."+extension

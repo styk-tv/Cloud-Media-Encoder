@@ -29,7 +29,11 @@ import subprocess
 import daemon
 import sys
 
-
+# get path to asset item. Also handles 'multiimage' assets
+def getFFPath(store, asset, type):
+    (ext, fps)=store.decodeAssetType(type)
+    if fps==None: return store.findAssetFile(asset, ext)
+    return store.findAsset(asset)+"/"+asset+"_%5d"+"."+ext
 
 class FileInfo:
     dimregexp=re.compile("([\\w]+)x([\\w]+).*")
