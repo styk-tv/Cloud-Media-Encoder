@@ -60,6 +60,8 @@ class ThumbnailerParams(EncoderParamsBase):
     self.borderWidth=int(getAttributeDef(element, "borderWidth","0"))
     self.borderColor=getAttributeDef(element, "borderColor", "#808080")
     self.borderRadius=int(getAttributeDef(element, "borderRadius", "0"))
+    self.backgroundColor=getAttributeDef(element, "backgroundColor", "#00000000")
+    self.square=getAttributeDef(element, "square", "0")>0
     
 class EncodersList(object):
   def __init__(self, path=Config.CONFIGDIR+"/Encoders.xml"):

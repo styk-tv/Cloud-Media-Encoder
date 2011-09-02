@@ -68,7 +68,7 @@ def xmlmsg(node,msg,rc=1):
     doc.writexml(sys.stdout)
     doc.unlink()
     return rc
-
+    
 
 class tools:
   def __init__(self):

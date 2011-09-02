@@ -12,14 +12,14 @@
 	/>
 -->
 
-   <task guid="task4" action="RENDER"
+   <task guid="task4" action="THUMBS"
       srcStore="store1"
       url="http://admin.juzou.tv/mobile/Extremists-176.mp4"
-      destAssetItemType="multi:png:10"
-      srcAssetItem="assetr"
-      srcAssetItemType="jsonrender"
+      destAssetItemType="png"
+      srcAssetItem="asset1"
+      srcAssetItemType="ts"
       dateStart=""
-      encoder="mp4encoder"
+      encoder="th1"
       destAssetItem="abvcx"
       destStore="store2"
 	/>  

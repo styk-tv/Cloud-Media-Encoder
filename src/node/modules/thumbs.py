@@ -72,19 +72,19 @@ class ThumbsExecutor(AbstractTaskExecutor):
         else: h=int(w/origratio)
         return (w, h)
 
-    def round_corner(self, radius, fill):
+    def round_corner(self, radius, fill, bg):
         """Draw a round corner"""
-        corner = Image.new('RGBA', (radius, radius), (0, 0, 0, 0))
+        corner = Image.new('RGBA', (radius, radius),bg)
         draw = ImageDraw.Draw(corner)
         draw.pieslice((0, 0, radius * 2, radius * 2), 180, 270, fill=fill)
         return corner
  
-    def round_rectangle(self, size, radius, fill):
+    def round_rectangle(self, size, radius, fill,   bg):
         """Draw a rounded rectangle"""
         width, height = size
         rectangle = Image.new('RGBA', size, fill)
         if radius==0: return rectangle 
-        corner = self.round_corner(radius, fill)
+        corner = self.round_corner(radius, fill, bg)
         rectangle.paste(corner, (0, 0))
         rectangle.paste(corner.rotate(90), (0, height - radius)) # Rotate the corner and paste it
         rectangle.paste(corner.rotate(180), (width - radius, height - radius))
@@ -95,34 +95,29 @@ class ThumbsExecutor(AbstractTaskExecutor):
     def makeBorder(self, outfile):
         img=Image.open(outfile)
         w=self.eparams.borderWidth
-        newimg=self.round_rectangle(img.size, self.eparams.borderRadius, self.eparams.borderColor)
-        maskimg=Image.new("RGB", img.size, 0)
-        mask=self.round_rectangle((img.size[0]-2*w, img.size[1]-2*w), self.eparams.borderRadius, 'white''')
-        maskimg.paste(mask, (w, w, img.size[0]-w, img.size[1]-w))
-        cropimg=img.crop((w, w, img.size[0]-w, img.size[1]-w))
-        print cropimg.size,  mask.size,  maskimg.size
-        newimg.paste(cropimg, (w, w, img.size[0]-w, img.size[1]-w), mask)
-        newimg.save(outfile, quality=80, optimize=True)
-        return
-                                                      
-        draw=ImageDraw.Draw(img)
-        w=self.eparams.borderWidth
-        fill=self.eparams.borderColor
-        draw.rectangle(((0, 0), (img.size[0], w)), fill=self.eparams.borderColor) 
-        draw.rectangle(((0, 0), (w, img.size[1])), fill=self.eparams.borderColor) 
-        draw.rectangle((img.size, (0, img.size[1]-w)), fill=self.eparams.borderColor) 
-        draw.rectangle((img.size, ( img.size[0]-w, 0)), fill=self.eparams.borderColor) 
+        bg=(0, 0, 0, 0)
+       
+        if self.eparams.backgroundColor<>"" and self.eparams.backgroundColor<>"#00000000": bg=self.eparams.backgroundColor
         
-        if self.eparams.borderRadius>0:
-            radius=self.eparams.borderRadius
-            print radius
-            corner = Image.new('RGBA', (radius, radius), (0, 0, 0, 0))
-            xdraw = ImageDraw.Draw(corner)
-            xdraw.pieslice((0, 0, radius * 2, radius * 2), 180, 270, fill=fill)
-            img.paste(corner, (0, 0))
-            img.paste(corner.rotate(90), (0, w - radius)) # Rotate the corner and paste it
-            img.paste(corner.rotate(180), (w - radius, w - radius))
-            img.paste(corner.rotate(270), (w - radius, 0))
+        dest=self.round_rectangle(img.size, self.eparams.borderRadius, self.eparams.borderColor, bg)
+        inside=self.round_rectangle((img.size[0]-2*w, img.size[1]-2*w), self.eparams.borderRadius, "white", (0, 0, 0, 0))
+
+        mask=Image.new("RGBA", img.size, (0, 0, 0, 0))
+        mask.paste(inside, (w, w))
+
+        dest.paste(img, (0, 0), mask)
+        dest.save(outfile, quality=80, optimize=True)
+        return 
+
+        
+    def makeSquare(self, outfile):
+        img=Image.open(outfile)
+        box=img.size
+        if img.size[0]==img.size[1]: return
+        diff=abs(img.size[0]-img.size[1])/2
+        if img.size[0]>img.size[1]: box=(diff, 0, img.size[0]-diff, img.size[1])
+        else: box=(0, diff, img.size[0], img.size[1]-diff)
+        img=img.crop(box)
         img.save(outfile, quality=80, optimize=True)
         
     def run(self):
@@ -139,6 +134,7 @@ class ThumbsExecutor(AbstractTaskExecutor):
             outfile=self.targetdir+"/th_"+self.destAsset+"_"+str(nr)+"."+self.eparams.outputtype
             fmpg=ThumbFFmpegHandler(self.eparams,   self.srcfile, outfile,  fi.frames, w, h, point,  ival)
             fmpg.run()
+            if self.eparams.square: self.makeSquare(outfile)
             if self.eparams.borderWidth>0: self.makeBorder(outfile)
             point+=ival
             nr+=1

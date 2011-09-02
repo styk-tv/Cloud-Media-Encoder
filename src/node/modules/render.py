@@ -110,10 +110,10 @@ class RenderExecutor(AbstractTaskExecutor):
         self.srcfile=slist.getByUuid(task.attributes["srcStore"]).findAssetFile(task.attributes["srcAssetItem"], task.attributes["srcAssetItemType"])
         self.targetdir=slist.getByUuid(task.attributes["destStore"]).findAsset(self.dstAsset)
         (self.ext, fps)=slist.getByUuid(task.attributes["destStore"]).decodeAssetType(task.attributes["destAssetItemType"])
-        print self.ext
         if not os.path.exists(self.targetdir): os.makedirs(self.targetdir)
         
     def run(self):
+        if self.task.attributes["srcAssetItemType"]<>"jsonrender": raise Exception("Unknown render type")
         with open(self.srcfile, "r") as f:
             desc=simplejson.load(f)
         
