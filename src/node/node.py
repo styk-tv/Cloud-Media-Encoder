@@ -26,6 +26,7 @@ from nodetools.localstores import LocalStoreList
 from nodetools.config import Config
 from nodetools import processtools
 from shutil import rmtree
+from nodetools.links import linkschecker
 import os
 from nodetools.pidlockfile import PIDLockFile
 import re
@@ -34,7 +35,7 @@ import grp
 import subprocess
 import daemon
 import sys
-
+from threading import Thread
 def drop_privileges(uid_name='nobody', gid_name='nogroup'):
     if os.getuid() != 0:
         # We're not root so, like, whatever dude
@@ -52,7 +53,6 @@ def drop_privileges(uid_name='nobody', gid_name='nogroup'):
     os.setuid(running_uid)
 
 
-    
         
 def main():
   drop_privileges(Config.USER)
@@ -60,6 +60,11 @@ def main():
       jman=XMLJobManager()
       jman.registerPlugins()
       queue=Queue(jman)
+      
+      linkthread=Thread(target=linkschecker)
+      linkthread.daemon=True
+      linkthread.start()
+      
       # remove old interrupted tasks
       jman.unfinishedToError()
       queue.run()
