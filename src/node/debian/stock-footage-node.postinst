@@ -31,6 +31,7 @@ case "$1" in
     mkdir -p /var/www/volumes
     chown node /var/www/volumes
     chown node /opt/node/etc
+    chown node /opt/node/etc/*
     
     ;;
 

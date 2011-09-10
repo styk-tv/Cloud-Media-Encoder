@@ -11,6 +11,7 @@ install:
 	cp extra/Encoders.xml ${DESTDIR}/opt/node/etc
 	cp nodetools/prodconfig.py ${DESTDIR}/opt/node/nodetools/config.py
 	echo "<queue />" > ${DESTDIR}/opt/node/queue/Queue.xml
+	echo "<links />" > ${DESTDIR}/opt/node/etc/Links.xml
 	mkdir -p ${DESTDIR}/etc/udev/rules.d
 	cp extra/*.rules ${DESTDIR}/etc/udev/rules.d
 gitinstall:
