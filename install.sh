@@ -1,20 +1,22 @@
 #!/bin/bash
 
-if [ -e /opt/node ]; then
-    echo "Node already installed, aborting"
-    exit 1 
-fi
-
 if [ ! -e .git ]; then
     echo "Run install.sh from main source directory"
     exit 1
 fi
 
+if [ -e /opt/node ]; then
+    echo "Node already installed, updating"
+    /etc/init.d/stock-footage-node start
+    cd /opt/node
+    git pull
+fi
+
+
 echo "Installing dependencies"
 
-apt-get install --force-yes -y ffmpeg python openssh-server python-daemon python-psutil python-paramiko python-m2crypto nginx make python-pam mediainfo python-imaging || exit 1 
+apt-get install --force-yes -y ffmpeg python openssh-server python-daemon python-psutil python-paramiko python-m2crypto nginx make python-pam mediainfo python-imaging python-simplejson || exit 1 
 
-DESTDIR=/
 
 echo "Installing"
 
@@ -42,29 +44,43 @@ rm /etc/udev/rules.d/80-nodedisk.rules || true
 rm /etc/init.d/node-encoding || true
 rm /etc/init.d/stock-footage-node || true
 rm /etc/rc[2345].d/stock-footage-node || true
+
 cd src/node
 rm nodetools/config.py
-rm -rf etc
+
+if [ ! -d /opt/node ]; then
+    ln -s ${PWD} /opt/node
+fi
+
+
+ln -s /opt/node/nodetools/prodconfig.py /opt/node/nodetools/config.py
 
 mkdir -p /var/www/volumes
 chown -R node /var/www/volumes
 
 
-ln -s ${PWD} ${DESTDIR}/opt/node
-mkdir -p ${DESTDIR}/opt/node/queue 
-echo "<queue />" > ${DESTDIR}/opt/node/queue/Queue.xml
-echo "<links />" > ${DESTDIR}/opt/node/etc/Links.xml
-chmod ugo+x ${DESTDIR}/opt/node/debian/init.d
-cp -r ${DESTDIR}/opt/node/extra ${DESTDIR}/opt/node/etc
-chown node ${DESTDIR}/opt/node/etc
-chown node ${DESTDIR}/opt/node/etc/*
-ln -s ${DESTDIR}/opt/node/extra/80-nodedisk.rules ${DESTDIR}/etc/udev/rules.d
-ln -s ${DESTDIR}/opt/node/nodetools/prodconfig.py ${DESTDIR}/opt/node/nodetools/config.py
-ln -s ${DESTDIR}/opt/node/debian/init.d ${DESTDIR}/etc/init.d/stock-footage-node
-ln ${DESTDIR}/etc/init.d/stock-footage-node ${DESTDIR}/etc/rc2.d/stock-footage-node
-ln ${DESTDIR}/etc/init.d/stock-footage-node ${DESTDIR}/etc/rc3.d/stock-footage-node
-ln ${DESTDIR}/etc/init.d/stock-footage-node ${DESTDIR}/etc/rc4.d/stock-footage-node
-ln ${DESTDIR}/etc/init.d/stock-footage-node ${DESTDIR}/etc/rc5.d/stock-footage-node
+mkdir -p /opt/node/queue 
+echo "<queue />" > /opt/node/queue/Queue.xml
+
+if [ ! -f /opt/node/etc/Links.xml ]; then
+    echo "<links />" > /opt/node/etc/Links.xml
+fi
+
+if [ ! -d /opt/node/etc ]; then
+    cp -r /opt/node/extra /opt/node/etc
+fi
+chown node /opt/node/etc
+chown node /opt/node/etc/*
+
+
+chmod ugo+x /opt/node/debian/init.d
+ln -s /opt/node/extra/80-nodedisk.rules /etc/udev/rules.d
+ln -s /opt/node/debian/init.d /etc/init.d/stock-footage-node
+
+ln /etc/init.d/stock-footage-node /etc/rc2.d/stock-footage-node
+ln /etc/init.d/stock-footage-node /etc/rc3.d/stock-footage-node
+ln /etc/init.d/stock-footage-node /etc/rc4.d/stock-footage-node
+ln /etc/init.d/stock-footage-node /etc/rc5.d/stock-footage-node
 
 rm -f /etc/rc.local.orig
 mv -f /etc/rc.local /etc/rc.local.orig || true
