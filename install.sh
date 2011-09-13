@@ -7,7 +7,7 @@ fi
 
 if [ -e /opt/node ]; then
     echo "Node already installed, updating"
-    /etc/init.d/stock-footage-node start
+    bash src/node/debian/init.d stop
     git pull
 fi
 
