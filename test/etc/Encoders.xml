@@ -7,5 +7,7 @@
         <!-- 3 evenly spaced thumbnails -->
         <thumbs type="ffmpeg_0612" version="2.15" width="200" height="150" guid="th1" outputType="png" thCount="2" borderWidth="2" borderRadius="15"
             backgroundColor="red" square="1" />
+        <image type="PIL" version="2.15" width="800" height="700" guid="img2" outputType="png" thCount="2" borderWidth="2" borderRadius="15"
+            backgroundColor="red" square="1" quality="20" watermarkFile="watermark.1.png" borderColor="blue" />
 
 </encoders>

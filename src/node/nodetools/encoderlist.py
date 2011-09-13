@@ -62,6 +62,22 @@ class ThumbnailerParams(EncoderParamsBase):
     self.borderRadius=int(getAttributeDef(element, "borderRadius", "0"))
     self.backgroundColor=getAttributeDef(element, "backgroundColor", "#00000000")
     self.square=getAttributeDef(element, "square", "0")>0
+
+class ImageTransform(EncoderParamsBase):
+  def __init__(self, element):
+    super(ImageTransform, self).__init__(element)
+    self.watermarkFile=getAttributeDef(element, "watermarkFile", "")
+    self.watermarkX=int(getAttributeDef(element, "watermarkX", 0))
+    self.watermarkY=int(getAttributeDef(element, "watermarkY", 0))
+    self.watermarkAsset=getAttributeDef(element, "watermarkAssetItem", "")
+    self.watermarkStore=getAttributeDef(element, "watermarkStore", "")
+    self.watermarkAssetType=getAttributeDef(element, "watermarkAssetItemType", "")
+    self.borderWidth=int(getAttributeDef(element, "borderWidth","0"))
+    self.quality=int(getAttributeDef(element, "quality", "80"))
+    self.borderColor=getAttributeDef(element, "borderColor", "#808080")
+    self.borderRadius=int(getAttributeDef(element, "borderRadius", "0"))
+    self.backgroundColor=getAttributeDef(element, "backgroundColor", "#00000000")
+    self.square=getAttributeDef(element, "square", "0")>0
     
 class EncodersList(object):
   def __init__(self, path=Config.CONFIGDIR+"/Encoders.xml"):
@@ -76,6 +92,10 @@ class EncodersList(object):
     for elm in self.doc.getElementsByTagName("thumbs"): 
       encoder=ThumbnailerParams(elm)
       self.encoders[encoder.id]=encoder
+    for elm in self.doc.getElementsByTagName("image"): 
+      encoder=ImageTransform(elm)
+      self.encoders[encoder.id]=encoder
+
  
   def save(self):
     with open(self.target, "w") as f: self.doc.writexml(f)

@@ -66,6 +66,25 @@ class VideoFFmpegHandler(FFmpegHandler):
         
         
 
+class Encoder(object):
+    def __init__(self, executor):
+        self.executor=executor
+    def run(self):
+        pass
+
+class FFmpegEncoder(Encoder):
+    def __init__(self, executor):
+        super(FFmpegEncoder, self).__init__(executor)
+
+    def run(self):
+        fi=FileInfo(self.executor.srcfile)
+        self.executor.frames=fi.frames
+        self.executor.reporter.setQueueProperty(self.executor.workflow, self.executor.task, "all_frames", str(fi.frames))
+        
+        fmpg=VideoFFmpegHandler(self.executor.eparams,   self.executor.srcfile, self.executor.outfile,  fi.frames, self.executor.progressCb)
+        fmpg.run()
+
+        
 
 class EncoderExecutor(AbstractTaskExecutor):
     def __init__(self,reporter, workflow,task):
@@ -73,7 +92,8 @@ class EncoderExecutor(AbstractTaskExecutor):
         elist=EncodersList()
         self.eparams=elist.getByUuid(task.attributes["encoder"]) 
         if self.eparams==None: raise Exception("No encoder with guid "+task.attributes["encoder"])
-        if self.eparams.type<>"ffmpeg_0612": raise Exception("Unknown encoder type "+self.eparams.type)
+        if self.eparams.type=="ffmpeg_0612": self.encoder=FFmpegEncoder(self)
+        else:  raise Exception("Unknown encoder type "+self.eparams.type)
         slist=LocalStoreList()
         self.frames=1
         dstAsset=task.attributes["srcAssetItem"]
@@ -89,12 +109,7 @@ class EncoderExecutor(AbstractTaskExecutor):
         self.updateProgress(progress*100.0/self.frames)
  #       self.reporter.setQueueProperty(self.workflow, self.task, "progress",  "%.2f" % (progress*100.0/self.frames))
     def run(self):
-        fi=FileInfo(self.srcfile)
-        self.frames=fi.frames
-        self.reporter.setQueueProperty(self.workflow, self.task, "all_frames", str(fi.frames))
-        
-        fmpg=VideoFFmpegHandler(self.eparams,   self.srcfile, self.outfile,  fi.frames, self.progressCb)
-        fmpg.run()
+        self.encoder.run()
         
 def pluginInfo():
     return "ENCODE", EncoderExecutor

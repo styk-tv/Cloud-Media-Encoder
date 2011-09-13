@@ -21,55 +21,9 @@ import simplejson
 from nodetools.localstores import LocalStoreList 
 from nodetools.abstractqueue import AbstractTaskExecutor
 from PIL import Image,  ImageColor,  ImageEnhance
+from nodetools.piltools import *
 import os
 
-
-def reduce_opacity(im, opacity):
-    """Returns an image with reduced opacity."""
-    assert opacity >= 0 and opacity <= 1
-    if im.mode != 'RGBA':
-        im = im.convert('RGBA')
-    else:
-        im = im.copy()
-    alpha = im.split()[3]
-    alpha = ImageEnhance.Brightness(alpha).enhance(opacity)
-    im.putalpha(alpha)
-    return im
-
-#too bloody slow
-def alpha_composite(front,back):
-    # The formula comes from http://en.wikipedia.org/wiki/Alpha_compositing
-    # front, back are assumed to be RGBA Images
-    front=np.asarray(front)
-    back=np.asarray(back)    
-    result=np.empty(front.shape,dtype='float')
-    alpha=np.index_exp[:,:,3:]
-    rgb=np.index_exp[:,:,:3]
-    falpha=front[alpha]/255.0
-    balpha=back[alpha]/255.0
-    result[alpha]=falpha+balpha*(1-falpha)
-    result[rgb]=(front[rgb]*falpha + back[rgb]*balpha*(1-falpha))/result[alpha]
-    result[alpha]*=255
-    front_transparent=(falpha<=0.001)&(balpha>0.001)
-    result[front_transparent]=back[front_transparent]
-    back_transparent=(balpha<=0.001)&(falpha>0.001)
-    result[back_transparent]=front[back_transparent]
-    result[result>255]=255
-    # astype('uint8') maps np.nan and np.inf to 0
-    result=result.astype('uint8')
-    result=Image.fromarray(result,'RGBA')
-    return result
-
-
-def composite(im, mark, position):
-    layer = Image.new('RGBA', im.size, (0,0,0,0))
-    layer.paste(mark, position)
-
-    r, g, b, a = layer.split()
-    layer = Image.merge("RGB", (r, g, b))
-    mask = Image.merge("L", (a,))
-    im.paste(layer, (0, 0), mask)
-    return im
 
 
 class RenderObject(object):
@@ -88,9 +42,6 @@ class RenderObject(object):
         
         #apply alpha
         if self.alpha<1:
-#            aimg=Image.new("RGBA", self.image.size, (0,0,0,0))
-#            print self.image.size,  aimg.size
- #           self.image=Image.blend(aimg, self.image, self.alpha)
             self.image=reduce_opacity(self.image, self.alpha)
     def render(self, target):
 #        target.paste(self.image, (self.x, self.y), self.image)
@@ -121,7 +72,6 @@ class RenderExecutor(AbstractTaskExecutor):
         self.width=desc["main"]["width"]
         self.height=desc["main"]["height"]
         self.background=tuple(desc["main"]["background"])
-        print self.background
         self.objects=[]
         frames=0
         for itm in desc["objects"]:
@@ -129,12 +79,13 @@ class RenderExecutor(AbstractTaskExecutor):
             if object.stop>frames: frames=object.stop
             self.objects+=[object]
         self.objects=sorted(self.objects,  key=lambda  frame: frame.z)
-        
+        print frames
         for i in range(frames):
             img=self.createFrame()
             for obj in self.objects:
                 img=obj.mayRender(img, i)
             name=self.targetdir+"/"+self.dstAsset+("_%05d" % i)+"."+self.ext
+            print name
             img.save(name)
     def createFrame(self):
         return Image.new("RGBA",  (self.width, self.height),  self.background)
