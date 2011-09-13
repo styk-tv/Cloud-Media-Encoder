@@ -8,7 +8,6 @@ fi
 if [ -e /opt/node ]; then
     echo "Node already installed, updating"
     /etc/init.d/stock-footage-node start
-    cd /opt/node
     git pull
 fi
 
