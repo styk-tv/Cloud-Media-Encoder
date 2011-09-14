@@ -6,9 +6,8 @@ if [ ! -e .git ]; then
 fi
 
 if [ -e /opt/node ]; then
-    echo "Node already installed, updating"
+    echo "Node already installed, finishing update"
     bash src/node/debian/init.d stop
-    git pull
 fi
 
 
