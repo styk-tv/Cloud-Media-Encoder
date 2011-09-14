@@ -24,6 +24,7 @@ from localstores import LocalStoreList
 from xml.dom.minidom import getDOMImplementation, parse
 from time import time, sleep
 import os
+from shutil import rmtree
 from tools import tools, LockedFile
 from datetime import datetime
 from calendar import timegm
@@ -63,22 +64,22 @@ class Links(object):
     def removeFromDisk(self, elm):
         src=elm.getAttribute("srcStore")
         dest=elm.getAttribute("destStore")
-        ait=elm.getAttribute("assetItem")
+        ait=elm.getAttribute("destAssetItem")
         srcS=self.stores.getByUuid(src)
         if srcS==None: return 
         dstS=self.stores.getByUuid(dest)
         if dstS==None: return 
         dstDir=dstS.findAsset(ait)
-        if not os.path.exists(dstDir) or not os.path.islink(dstDir): return 
-        os.remove(dstDir)
+        if not os.path.exists(dstDir): return 
+        rmtree(dstDir)
         
-    def find(self, src, dest, asset): 
+    def find(self, dest, asset): 
         for elm in self.doc.getElementsByTagName("link"): 
-            if elm.getAttribute("srcStore")==src and elm.getAttribute("destStore")==dest and elm.getAttribute("assetItem")==asset: return elm
+            if elm.getAttribute("destStore")==dest and elm.getAttribute("destAssetItem")==asset: return elm
         return None
 
-    def remove(self,  src, dest,  asset):
-        elm=self.find(src, dest, asset)
+    def remove(self,  dest,  asset):
+        elm=self.find(dest, asset)
         if elm==None: raise Exception("Link not found")
         self.removeFromDisk(elm)
         elm.parentNode.removeChild(elm)
@@ -86,34 +87,38 @@ class Links(object):
     def parseDate(self, date):
         return timegm(datetime.strptime(date, DATEFORMAT).utctimetuple())
         
-    def modify(self, src, dest, asset, expire):
-        elm=self.find(src, dest, asset)
+    def modify(self, dest, asset, expire):
+        elm=self.find(dest, asset)
         if elm==None: raise Exception("Link not found")
         elm.setAttribute("expire",str(self.parseDate(expire)) )
         self.save()
        
         
-    def add(self, src, dest, asset, expire):
-        ex=self.find(src, dest, asset)
+    def add(self, src, dest, asset, destasset,  expire):
+        ex=self.find( dest, destasset)
         if ex<>None: raise Exception("Link already exists")
         srcS=self.stores.getByUuid(src)
         destS=self.stores.getByUuid(dest)
         if srcS==None or destS==None: raise Exception("Invalid store")
         srcpath=srcS.findAsset(asset)
         if not os.path.exists(srcpath): raise Exception("Source asset does not exist")
-        destpath=destS.findAsset(asset)
+        destpath=destS.findAsset(destasset)
         if os.path.exists(destpath): raise Exception("Destination already exists")
         elm=self.doc.createElement("link")
         elm.setAttribute("srcStore", src)
         elm.setAttribute("destStore", dest)
         elm.setAttribute("assetItem", asset)
+        elm.setAttribute("destAssetItem",destasset)
         elm.setAttribute("expire", str(self.parseDate(expire)))
-        if not os.path.exists(os.path.dirname(destpath)): 
-            os.makedirs(os.path.dirname(destpath))
- 
-        os.symlink(os.path.abspath(srcpath), os.path.abspath(destpath))
+        self.createLink(srcpath, destpath, asset, destasset)
         self.doc.documentElement.appendChild(elm)
         self.save()
+    def createLink(self, srcpath, destpath,  srcasset, dstasset):
+        os.makedirs(destpath)
+        for f in os.listdir(srcpath):
+            df=f.replace(srcasset, dstasset)
+            os.symlink(os.path.abspath(srcpath)+"/"+f, os.path.abspath(destpath)+"/"+df)
+ 
     
 def linkschecker():
     while True:

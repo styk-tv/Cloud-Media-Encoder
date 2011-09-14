@@ -30,16 +30,16 @@ def main():
         links=Links()
         if action=="list": links.write(sys.stdout)
         elif action=="create": 
-            if len(sys.argv)<7: raise Exception("Usage: links.py create <srcStore> <destStore> <assetItem> <expireDate> <expireTime>")
-            ret=links.add(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5]+" "+sys.argv[6])
+            if len(sys.argv)<8: raise Exception("Usage: links.py create <srcStore> <destStore> <srcAssetItem> <destAssertItem> <expireDate> <expireTime>")
+            ret=links.add(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6]+" "+sys.argv[7])
             return xmlmsg("result", "OK")
         elif action=="modify": 
-            if len(sys.argv)<7: raise Exception("Usage: links.py modify <srcStore> <destStore> <assetItem> <expireDate> <expireTime>")
-            ret=links.modify(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5]+" "+sys.argv[6])
+            if len(sys.argv)<6: raise Exception("Usage: links.py modify <destStore> <destAssetItem> <expireDate> <expireTime>")
+            ret=links.modify(sys.argv[2], sys.argv[3],  sys.argv[4]+" "+sys.argv[5])
             return xmlmsg("result", "OK")
         elif action=="remove":
-            if len(sys.argv)<5: raise Exception("Usage: links.py remove <srcStore> <destStore> <assetItem>")
-            ret=links.remove(sys.argv[2],sys.argv[3], sys.argv[4])
+            if len(sys.argv)<4: raise Exception("Usage: links.py remove <destStore> <destAssetItem>")
+            ret=links.remove(sys.argv[2],sys.argv[3])
             return xmlmsg("result", "OK")
         else: raise Exception("Usage: links.py <list>|<create>|<remove>|<modify>")
     except Exception, e:
