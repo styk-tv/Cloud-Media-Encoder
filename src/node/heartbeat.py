@@ -30,7 +30,7 @@ from nodetools.xmlqueue import XMLJobManager
 import sys
 from time import sleep
 
-def printStatus(out):
+def printStatus(out, checkcpu):
     doc=getDOMImplementation().createDocument(None, "status", None)
     node=doc.createElement("node")
     a=XMLJobManager()
@@ -47,7 +47,10 @@ def printStatus(out):
     mem.setAttribute("total_virtual", str(psutil.total_virtmem()))
     mem.setAttribute("avail_virtual", str(psutil.avail_virtmem()))
     doc.documentElement.appendChild(mem)
-    cpu=doc.createElement("cpu")
+    if checkcpu:
+        cpu=doc.createElement("cpu")
+        cpu.setAttribute("usage", str(psutil.cpu_percent()))
+        doc.documentElement.appendChild(cpu)
     lsl=LocalStoreList()
     for disk in lsl.disks:
         d=doc.createElement("disk")
@@ -55,15 +58,11 @@ def printStatus(out):
         d.setAttribute("online", str(disk.online))
         d.setAttribute('freespace', str(disk.freespace))
         doc.documentElement.appendChild(d)
-    cpu.setAttribute("usage", str(psutil.cpu_percent()))
-    doc.documentElement.appendChild(cpu)
     doc.writexml(out)
 
 def main():
-    sleep(2)
-    while True:
-        printStatus(sys.stdout)
+        checkcpu=len(sys.argv)>1 and sys.argv[1]=="--cpu"
+        printStatus(sys.stdout, checkcpu)
         sys.stdout.write("\n")
-        sleep(10)
 
 main()
