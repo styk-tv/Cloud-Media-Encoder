@@ -111,6 +111,22 @@ def makeBorder(eparams, img):
 
         dest.paste(img, (0, 0), mask)
         return dest
+
+def toPixels(p, realsize):
+    if p[-1]=="%": return int(float(p[:-1])/100*realsize)
+    elif p[-2:]=="px": return int(p[:-2])
+
+def adjustAnchor(p, anchor):
+    if anchor=="2": return -p
+    elif anchor=="1": return -p/2
+    else: return 0
+    
+def computeWatermarkPosition(eparams,  wmsize,  imgsize):
+    x=toPixels(eparams.watermarkX, imgsize[0])
+    y=toPixels(eparams.watermarkY, imgsize[1])
+    x+=adjustAnchor(wmsize[0], eparams.watermarkAnchor[0])
+    y+=adjustAnchor(wmsize[1], eparams.watermarkAnchor[1])
+    return (x, y)
     
         
 def makeSquare(img):

@@ -67,8 +67,8 @@ class ImageTransform(EncoderParamsBase):
   def __init__(self, element):
     super(ImageTransform, self).__init__(element)
     self.watermarkFile=getAttributeDef(element, "watermarkFile", "")
-    self.watermarkX=int(getAttributeDef(element, "watermarkX", 0))
-    self.watermarkY=int(getAttributeDef(element, "watermarkY", 0))
+    self.watermarkX=getAttributeDef(element, "watermarkX", 0)
+    self.watermarkY=getAttributeDef(element, "watermarkY", 0)
     self.watermarkAsset=getAttributeDef(element, "watermarkAssetItem", "")
     self.watermarkStore=getAttributeDef(element, "watermarkStore", "")
     self.watermarkAssetType=getAttributeDef(element, "watermarkAssetItemType", "")
@@ -78,6 +78,7 @@ class ImageTransform(EncoderParamsBase):
     self.borderRadius=int(getAttributeDef(element, "borderRadius", "0"))
     self.backgroundColor=getAttributeDef(element, "backgroundColor", "#00000000")
     self.square=getAttributeDef(element, "square", "0")<>"0"
+    self.watermarkAnchor=getAttributeDef(element, "watermarkAnchor", "00")
     
 class EncodersList(object):
   def __init__(self, path=Config.CONFIGDIR+"/Encoders.xml"):

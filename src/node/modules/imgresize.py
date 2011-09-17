@@ -62,7 +62,8 @@ class ImgResizeExecutor(AbstractTaskExecutor):
         if self.eparams.borderWidth>0: img=makeBorder( self.eparams, img)
         if self.watermarkFile<>None:
             wmark=Image.open(self.watermarkFile)
-            img=composite(img, wmark,  (self.eparams.watermarkX, self.eparams.watermarkY))
+            (wx, wy)=computeWatermarkPosition(self.eparams,  wmark.size,  img.size)
+            img=composite(img, wmark,  (wx, wy))
         img.save(self.outfile, quality=self.eparams.quality)
 
 def pluginInfo():
