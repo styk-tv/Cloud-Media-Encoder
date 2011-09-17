@@ -57,6 +57,7 @@ def main_menu():
         print "4) Stop node"
     else:
         print "5) Start node"
+    if os.path.exists("/home/node/styk.tv/update.sh"): print "6) Update node"
     print "0) Exit"
     print
     sys.stdout.write("Enter choice: ")
@@ -125,6 +126,9 @@ def main():
         elif opt=="5": 
             os.system("python /opt/node/node.py start")
             os.system("/etc/init.d/nginx start")
+            sleep(3)
+        elif opt=="6":
+            os.system("bash /home/node/styk.tv/update.sh")
             sleep(3)
         elif opt=="0": 
             print "Console can be opened again by running /etc/rc.local"
