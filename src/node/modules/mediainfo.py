@@ -23,6 +23,7 @@ from nodetools.abstractqueue import AbstractTaskExecutor,Queue
 from nodetools.tools import check_output
 from xml.dom.minidom import getDOMImplementation, parseString
 import os
+import pyexiv2
 
 
 
@@ -41,6 +42,19 @@ class MediaInfoExecutor(AbstractTaskExecutor):
          if ret<>0: raise Exception("SHA1SUM failed")
          out=out.split(" ")[0]
          for flm in doc.getElementsByTagName("File"):  flm.setAttribute("sha1sum", out)
+         try:
+             exif=pyexiv2.ImageMetadata(self.srcfile)
+             exif.read()
+             el=doc.createElement("exif")
+             doc.getElementsByTagName("File")[0].appendChild(el)
+             for k in exif.values():
+                if len(k.human_value)>128: continue
+                e2=doc.createElement(k.key[5:])
+                v=doc.createTextNode(k.human_value)
+                e2.appendChild(v)
+                el.appendChild(e2)
+         except:
+             pass
          with open(self.dstfile, "w") as out: doc.writexml(out)
 
 def pluginInfo():

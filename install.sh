@@ -13,7 +13,7 @@ fi
 
 echo "Installing dependencies"
 
-apt-get install --force-yes -y ffmpeg python openssh-server python-daemon python-psutil python-paramiko python-m2crypto nginx make python-pam mediainfo python-imaging python-simplejson || exit 1 
+apt-get install --force-yes -y ffmpeg python openssh-server python-daemon python-psutil python-paramiko python-m2crypto nginx make python-pam mediainfo python-imaging python-simplejson python-pyexiv2 || exit 1 
 
 
 echo "Installing"
