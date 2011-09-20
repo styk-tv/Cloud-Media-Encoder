@@ -163,7 +163,8 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
               if self._getTaskElement(wfnode, t)<>None: break
               doc.documentElement.removeChild(wfnode)
       for i in wfnodes: doc.documentElement.removeChild(i)
-      self.save(doc)
+      doc.writexml(out)
+      
   def _getStatus(self, wfnode):
       status=0
       if wfnode.hasAttribute("status"): status=int(wfnode.getAttribute("status"))
