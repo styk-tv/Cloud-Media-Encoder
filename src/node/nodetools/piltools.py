@@ -60,6 +60,21 @@ def alpha_composite(front,back):
 
 def composite(im, mark, position):
     layer = Image.new('RGBA', im.size, (0,0,0,0))
+    # negative offset? crop it first
+    if position[0]<0 or position[1]<0:
+        cx=0
+        cy=0
+        nposX=position[0]
+        nposY=position[1]
+        if position[0]<0: 
+            cx=-position[0]
+            nposX=0
+        if position[1]<0: 
+            cy=-position[1]
+            nposY=0
+        mark=mark.crop((cx, cy, mark.size[0], mark.size[1]))
+        position=(nposX, nposY)
+
     layer.paste(mark, position)
 
     r, g, b, a = layer.split()

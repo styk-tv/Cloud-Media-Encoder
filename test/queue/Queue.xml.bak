@@ -12,7 +12,7 @@
 	/>
 -->
 
-   <task guid="task4" action="MEDIAINFO"
+   <task guid="task4" action="IMGRESIZE"
       srcStore="store1"
       url="http://admin.juzou.tv/mobile/Extremists-176.mp4"
       destAssetItemType="png"
