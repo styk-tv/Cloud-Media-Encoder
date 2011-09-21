@@ -57,7 +57,7 @@ class ImgResizeExecutor(AbstractTaskExecutor):
         img=Image.open(self.srcfile)
         
         newsize=computeSize(self.eparams, float(img.size[0])/float(img.size[1]))
-        img=img.resize(newsize, Image.BICUBIC)
+        img=img.resize(newsize, Image.ANTIALIAS)
         if self.eparams.square: img=makeSquare(img)
         if self.eparams.borderWidth>0: img=makeBorder( self.eparams, img)
         if self.watermarkFile<>None:
