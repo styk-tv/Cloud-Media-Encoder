@@ -80,11 +80,44 @@ class StoreList(object):
       disk=Disk(elm)
       self.disks.append(disk)
       for store in disk.stores: self.stores[store.uuid]=store
-      
+  def save(self):
+    with LockedFile(self.target, "w") as f: self.doc.writexml(f)
+        
   def getDisk(self, uuid):
     for disk in self.disks:
         if disk.uuid==uuid: return disk
     return None
+  def addDisk(self,  guid, host):
+      if self.getDisk(guid)<>None: raise Exception("Disk already exists")
+      elm=self.doc.createElement("disk")
+      elm.setAttribute("guid", guid)
+      elm.setAttribute("host", host)
+      self.doc.documentElement.appendChild(elm)
+      self.save()
+      return guid
+  def removeDisk(self, guid):
+      disk=self.getDisk(guid)
+      if disk==None: raise Exception("Disk not found")
+      self.doc.documentElement.removeChild(disk)
+      self.dave()
+      return "OK"
+  def addStore(self, disk, guid, type):
+      if self.getByUuid(guid)<>None: raise Exception("Store already exists")
+      disk=self.getDisk(disk)
+      elm=self.doc.createElement("store")
+      elm.setAttribute("guid", guid)
+      elm.setAttribute("type", type)
+      disk.element.appendChild(elm)
+      self.save()
+      return guid
+      
+  def removeStore(self, guid):
+      store=self.getByUuid(guid)
+      if store==None: raise Exception("Store not found")
+      disk=self.getDisk(store.diskuuid)
+      disk.element.removeChild(store.element)
+      self.save()
+      return "OK"
   def getByUuid(self,uuid):
     if self.stores.has_key(uuid):  return self.stores[uuid]
     else: return None
