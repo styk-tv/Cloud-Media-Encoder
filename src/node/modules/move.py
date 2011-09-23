@@ -23,9 +23,9 @@ from nodetools.abstractqueue import AbstractTaskExecutor,Queue
 from nodetools.localstores import LocalStoreList
 from nodetools.storelist import StoreList
 from nodetools.tools import tools
-from shutil import move, rmtree
+from shutil import move, rmtree, copy
 from os import rename, listdir,  makedirs
-from os.path import dirname, exists, split
+from os.path import dirname, exists, split, abspath
 import paramiko
 import errno
 from nodetools.config import Config
@@ -56,10 +56,13 @@ def sftp_makedirs(name, sftp):
     sftp.mkdir(name)
 
 
-class MoveExecutor(AbstractTaskExecutor):
-    def __init__(self,reporter, workflow,task):
-        super(MoveExecutor, self).__init__(reporter, workflow, task)
+class CopyMoveExecutor(AbstractTaskExecutor):
+    def __init__(self,reporter, workflow,task, move):
+        super(CopyMoveExecutor, self).__init__(reporter, workflow, task)
         slist=LocalStoreList()
+        self.move=move
+        self.srcassetuid=task.attributes["srcAssetItem"]
+        self.dstassetuid=task.attributes["destAssetItem"]
         self.srcasset=slist.getByUuid(task.attributes["srcStore"]).findAsset(task.attributes["srcAssetItem"])
         self.targetstore=slist.getByUuid(task.attributes["destStore"])
         self.isLocal=True
@@ -74,10 +77,13 @@ class MoveExecutor(AbstractTaskExecutor):
         if self.isLocal: self.localRun()
         else: self.remoteRun()
     def localRun(self):
-        self.destdir=self.targetstore.findAsset(self.task.attributes["destAssetItem"])
-        if not exists(dirname(self.destdir)): 
-            makedirs(dirname(self.destdir))
-        move(self.srcasset,self.destdir+".tmp")
+        self.destdir=self.targetstore.findAsset(self.dstassetuid)
+        makedirs(self.destdir+".tmp")
+        for f in listdir(self.srcasset):
+            df=f.replace(self.srcassetuid, self.dstassetuid)
+            if self.move: move(abspath(self.srcasset)+"/"+f, abspath(self.destdir)+".tmp/"+df)
+            else: copy(abspath(self.srcasset)+"/"+f, abspath(self.destdir)+".tmp/"+df)
+
         rename(self.destdir+".tmp",self.destdir)
     def remoteRun(self):
         key = paramiko.RSAKey.from_private_key_file(PRIVKEY)
@@ -91,15 +97,17 @@ class MoveExecutor(AbstractTaskExecutor):
         files=listdir(self.srcasset)
         i=0.0
         for f in files:
-            sftp.put(self.srcasset+"/"+f, self.destdir+".tmp/"+f)
+            sftp.put(self.srcasset+"/"+f, self.destdir+".tmp/"+f.replace(self.srcassetuid, self.dstassetuid))
             i=i+1
             self.updateProgress(i/len(files)*99)
         sftp.rename(self.destdir+".tmp", self.destdir)
         transport.close()
-        rmtree(self.srcasset)
+        if self.move: rmtree(self.srcasset)
         
-        
-        
+class MoveExecutor(CopyMoveExecutor):
+    def __init__(self,reporter, workflow,task):
+        super(MoveExecutor, self).__init__(reporter, workflow, task, True)
+    
 
 def pluginInfo():
     return "MOVE", MoveExecutor

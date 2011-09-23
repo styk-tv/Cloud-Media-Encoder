@@ -2,15 +2,15 @@
 
  <workflow guid="workflow1" status="0">
 
-<!--
-   <task guid="task2" action="DELETE"
-      srcStore="store1"
+
+   <task guid="task2" action="MOVE"
+      srcStore="store2"
       srcAssetItem="vasset"
-      destStore="store1"
-      destAssetItem="vasset"
+      destStore="store2"
+      destAssetItem="vassetx"
       key="AAAAAAAAAAAAAAAAAAAAAA=="
 	/>
--->
+<!---
 
    <task guid="task4" action="IMGRESIZE"
       srcStore="store1"
@@ -23,7 +23,7 @@
       destAssetItem="abvcx"
       destStore="store2"
 	/>  
-    
+-->
 
 <!--   <task guid="task1" action="DOWNLOAD"
       srcStore="store1"
