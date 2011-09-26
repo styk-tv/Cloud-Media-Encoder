@@ -109,6 +109,7 @@ class LocalStoreList(StoreList):
         pass
     store.element.removeAttribute("port")
     store.element.removeAttribute("vhost")
+    store.element.removeAttribute("redirect404")
     self.save()
     tools.reloadNginx()
     return "OK"
