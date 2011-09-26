@@ -39,8 +39,10 @@ def main():
             ret=stores.remove(sys.argv[2],)
             return xmlmsg("result", ret)
         elif action=="publish":
-            if len(sys.argv)<5: raise Exception("Usage: stores.py publish <store> <virtual host> <port>")
-            ret=stores.publish(sys.argv[2], sys.argv[3], sys.argv[4])
+            if len(sys.argv)<5: raise Exception("Usage: stores.py publish <store> <virtual host> <port> [redirect404]")
+            redirect404=None
+            if len(sys.argv)>5: redirect404=sys.argv[5]
+            ret=stores.publish(sys.argv[2], sys.argv[3], sys.argv[4], redirect404)
             return xmlmsg("result", ret)
         elif action=="unpublish":
             if len(sys.argv)<3: raise Exception("Usage: stores.py unpublish <store>")

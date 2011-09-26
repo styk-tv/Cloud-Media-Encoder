@@ -5,4 +5,4 @@
 </disk><disk guid="disk3">
     
     </disk>
-<disk guid="disk2"><store guid="32b288da49cb45d2b77651e85dc2f304" type="EO"/></disk></stores>
+<disk guid="disk2"><store guid="32b288da49cb45d2b77651e85dc2f304" port="80" redirect404="http://www.abc.org/" type="EO" vhost="vhost.local"/></disk></stores>

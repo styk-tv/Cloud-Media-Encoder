@@ -68,7 +68,7 @@ class LocalStoreList(StoreList):
     self.save()
     return uuid
         
-  def publish(self, uuid, vhost, port):
+  def publish(self, uuid, vhost, port,  redirect404):
     store=self.getByUuid(uuid)
     if store==None: raise Exception("Unknown store")
     if store.vhost<>"" or store.port<>"": raise Exception("Store is already published")
@@ -77,10 +77,13 @@ class LocalStoreList(StoreList):
         f.write("   listen "+port+";\n")
         f.write("   server_name "+vhost+";\n")
         f.write("   access_log /var/log/nginx/"+uuid+".access;\n")
+        if store.type=="LI": f.write("   types { } \n")
+        if redirect404<>None: f.write("   error 404  "+redirect404+"\n")
         f.write("   location / { root /var/www/volumes/"+store.diskuuid+"/"+uuid+"; } \n")
         f.write("}\n")
     store.element.setAttribute("vhost", vhost)
     store.element.setAttribute("port", str(port))
+    if redirect404<>None: store.element.setAttribute("redirect404", redirect404)
     self.save()
     tools.reloadNginx()
     return vhost+":"+str(port)

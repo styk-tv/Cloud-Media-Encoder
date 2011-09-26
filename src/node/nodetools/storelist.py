@@ -34,6 +34,7 @@ class Store:
     self.diskuuid=diskuuid
     self.path=Config.STORES_ROOT+"/"+self.diskuuid+"/"+self.uuid
     self.vhost=element.getAttribute("vhost")
+    self.redirect404=element.getAttribute("redirect404")
     self.port=element.getAttribute("port")
     self.element=element
     self.local=os.path.exists(self.path)
