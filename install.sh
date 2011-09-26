@@ -63,6 +63,9 @@ echo "<queue />" > /opt/node/queue/Queue.xml
 if [ ! -f /opt/node/etc/Links.xml ]; then
     echo "<links />" > /opt/node/etc/Links.xml
 fi
+if [ ! -f /opt/node/etc/Stores.xml ]; then
+    echo "<stores />" > /opt/node/etc/Stores.xml
+fi
 
 if [ ! -d /opt/node/etc ]; then
     cp -r /opt/node/extra /opt/node/etc
