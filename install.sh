@@ -1,7 +1,7 @@
 #!/bin/bash
 
 MULTIMEDIA_REPO=http://debian-multimedia.fx-services.com/
-MAIN_REPO=http://ftp.pl.debian.org/
+MAIN_REPO=http://ftp.pl.debian.org/debian
 TARGET_VERSION=wheezy
 
 if [ ! -e .git ]; then
@@ -15,7 +15,7 @@ if [ -e /opt/node ]; then
 fi
 
 
-cat << EOF > /etc/apt/sources.list.d/node.sources
+cat << EOF > /etc/apt/sources.list.d/node.list
 deb $MULTIMEDIA_REPO $TARGET_VERSION main
 deb $MAIN_REPO $TARGET_VERSION main
 EOF
