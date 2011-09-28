@@ -1,5 +1,9 @@
 #!/bin/bash
 
+MULTIMEDIA_REPO=http://debian-multimedia.fx-services.com/
+MAIN_REPO=http://ftp.pl.debian.org/
+TARGET_VERSION=wheezy
+
 if [ ! -e .git ]; then
     echo "Run install.sh from main source directory"
     exit 1
@@ -11,8 +15,15 @@ if [ -e /opt/node ]; then
 fi
 
 
+cat << EOF > /etc/apt/sources.list.d/node.sources
+deb $MULTIMEDIA_REPO $TARGET_VERSION main
+deb $MAIN_REPO $TARGET_VERSION main
+EOF
+
+
 echo "Installing dependencies"
 
+apt-get update
 apt-get install --force-yes -y ffmpeg python openssh-server python-daemon python-psutil python-paramiko python-m2crypto nginx make python-pam mediainfo python-imaging python-simplejson python-pyexiv2 || exit 1 
 
 
@@ -60,18 +71,18 @@ chown -R node /var/www/volumes
 mkdir -p /opt/node/queue 
 echo "<queue />" > /opt/node/queue/Queue.xml
 
+if [ ! -d /opt/node/etc ]; then
+    cp -r /opt/node/extra /opt/node/etc
+fi
+chown node /opt/node/etc
+chown node /opt/node/etc/*
+
 if [ ! -f /opt/node/etc/Links.xml ]; then
     echo "<links />" > /opt/node/etc/Links.xml
 fi
 if [ ! -f /opt/node/etc/Stores.xml ]; then
     echo "<stores />" > /opt/node/etc/Stores.xml
 fi
-
-if [ ! -d /opt/node/etc ]; then
-    cp -r /opt/node/extra /opt/node/etc
-fi
-chown node /opt/node/etc
-chown node /opt/node/etc/*
 
 
 chmod ugo+x /opt/node/debian/init.d
