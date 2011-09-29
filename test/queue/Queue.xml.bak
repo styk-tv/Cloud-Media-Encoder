@@ -2,7 +2,7 @@
 
  <workflow guid="workflow1" status="0">
 
-
+<!--
    <task guid="task2" action="MOVE"
       srcStore="store2"
       srcAssetItem="vasset"
@@ -10,9 +10,9 @@
       destAssetItem="vassetx"
       key="AAAAAAAAAAAAAAAAAAAAAA=="
 	/>
-<!---
+-->
 
-   <task guid="task4" action="IMGRESIZE"
+   <task guid="task4" action="IMGROTATE"
       srcStore="store1"
       url="http://admin.juzou.tv/mobile/Extremists-176.mp4"
       destAssetItemType="png"
@@ -22,8 +22,8 @@
       encoder="img2"
       destAssetItem="abvcx"
       destStore="store2"
+      direction="CW180"
 	/>  
--->
 
 <!--   <task guid="task1" action="DOWNLOAD"
       srcStore="store1"
