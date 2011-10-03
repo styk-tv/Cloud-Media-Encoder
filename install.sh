@@ -52,7 +52,6 @@ chown -R node /home/node/styk.tv
 rm /etc/udev/rules.d/80-nodedisk.rules || true
 rm /etc/init.d/node-encoding || true
 rm /etc/init.d/stock-footage-node || true
-rm /etc/rc[2345].d/stock-footage-node || true
 
 cd src/node
 rm nodetools/config.py
@@ -85,10 +84,13 @@ if [ ! -f /opt/node/etc/Stores.xml ]; then
 fi
 
 
+insserv -r stock-footage-node || true
+rm /etc/init.d/node-encoding || true
+rm /etc/init.d/stock-footage-node || true
+
 chmod ugo+x /opt/node/debian/init.d
 ln -s /opt/node/extra/80-nodedisk.rules /etc/udev/rules.d
 ln -s /opt/node/debian/init.d /etc/init.d/stock-footage-node
-insserv -r stock-footage-node || true
 insserv stock-footage-node
 
 rm -f /etc/rc.local.orig
