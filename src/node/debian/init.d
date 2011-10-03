@@ -1,7 +1,7 @@
 #!/bin/sh
 ### BEGIN INIT INFO
-# Provides:          node-encoding
-# Required-Start:    $network $local_fs
+# Provides:          stock-footage-node
+# Required-Start:    $network $remote_fs nginx
 # Required-Stop:
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6

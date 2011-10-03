@@ -8,9 +8,9 @@ fi
 
 echo "Uninstalling"
 rm /etc/udev/rules.d/80-nodedisk.rules || true
+insserv -r stock-footage-node
 rm /etc/init.d/stock-footage-node
 rm /etc/init.d/node-encoding
-rm /etc/rc[2345].d/S99stock-footage-node || true
 
 rm -rf /opt/node
 cd src/node

@@ -88,11 +88,8 @@ fi
 chmod ugo+x /opt/node/debian/init.d
 ln -s /opt/node/extra/80-nodedisk.rules /etc/udev/rules.d
 ln -s /opt/node/debian/init.d /etc/init.d/stock-footage-node
-
-ln /etc/init.d/stock-footage-node /etc/rc2.d/S99stock-footage-node
-ln /etc/init.d/stock-footage-node /etc/rc3.d/S99stock-footage-node
-ln /etc/init.d/stock-footage-node /etc/rc4.d/S99stock-footage-node
-ln /etc/init.d/stock-footage-node /etc/rc5.d/S99stock-footage-node
+insserv -r stock-footage-node || true
+insserv stock-footage-node
 
 rm -f /etc/rc.local.orig
 mv -f /etc/rc.local /etc/rc.local.orig || true
