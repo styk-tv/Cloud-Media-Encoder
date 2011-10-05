@@ -12,14 +12,14 @@
 	/>
 -->
 
-   <task guid="task4" action="IMGROTATE"
+   <task guid="task4" action="ENCODE"
       srcStore="store1"
       url="http://admin.juzou.tv/mobile/Extremists-176.mp4"
-      destAssetItemType="png"
-      srcAssetItem="asseti1"
-      srcAssetItemType="jpg"
+      destAssetItemType="flv"
+      srcAssetItem="assetw"
+      srcAssetItemType="multi:png:10"
       dateStart=""
-      encoder="img2"
+      encoder="mp4encoder"
       destAssetItem="abvcx"
       destStore="store2"
       direction="CW180"

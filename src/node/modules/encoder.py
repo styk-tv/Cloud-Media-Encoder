@@ -33,8 +33,8 @@ import sys
 
 
 class VideoFFmpegHandler(FFmpegHandler):
-    def __init__(this, eparams ,  localfile,  outfile, frames, progressCb):
-        super(VideoFFmpegHandler, this).__init__(eparams, localfile, outfile, frames, progressCb)
+    def __init__(this, eparams ,  localfile,  outfile, frames, progressCb, srcFps):
+        super(VideoFFmpegHandler, this).__init__(eparams, localfile, outfile, frames, progressCb, srcFps)
         this.commonargs+=[ "-vcodec", this.eparams.vcodec]
         if len(eparams.extraparams)>0: this.commonargs+=eparams.extraparams.split(" ")
         if this.eparams.fps>0: this.commonargs+=["-r", str(this.eparams.fps)]
@@ -81,7 +81,8 @@ class FFmpegEncoder(Encoder):
         self.executor.frames=fi.frames
         self.executor.reporter.setQueueProperty(self.executor.workflow, self.executor.task, "all_frames", str(fi.frames))
         
-        fmpg=VideoFFmpegHandler(self.executor.eparams,   self.executor.srcfile, self.executor.outfile,  fi.frames, self.executor.progressCb)
+        fmpg=VideoFFmpegHandler(self.executor.eparams,   self.executor.srcfile, self.executor.outfile,  fi.frames, self.executor.progressCb, 
+                                self.executor.srcFps)
         fmpg.run()
 
         
@@ -99,7 +100,9 @@ class EncoderExecutor(AbstractTaskExecutor):
         dstAsset=task.attributes["srcAssetItem"]
         if task.attributes.has_key("destAssetItem"): dstAsset=task.attributes["destAssetItem"]
 
-        self.srcfile=slist.getByUuid(task.attributes["srcStore"]).findAssetFile(task.attributes["srcAssetItem"], task.attributes["srcAssetItemType"])
+        srcstore=slist.getByUuid(task.attributes["srcStore"])
+        (ext, self.srcFps)=srcstore.decodeAssetType(task.attributes["srcAssetItemType"])
+        self.srcfile=getFFPath(srcstore, task.attributes["srcAssetItem"], task.attributes["srcAssetItemType"])
         targetdir=slist.getByUuid(task.attributes["destStore"]).findAsset(dstAsset)
         if not os.path.exists(targetdir): os.makedirs(targetdir)
         self.outfile=slist.getByUuid(task.attributes["destStore"]).findAssetFile(dstAsset, self.eparams.outputtype)

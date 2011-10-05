@@ -89,13 +89,15 @@ class FileInfo:
         return "V: "+str(this.width)+"x"+str(this.height)+" "+str(this.duration)+"s at "+str(this.fps)+" - "+str(this.frames)+" frames"
 
 class FFmpegHandler(object):
-    def __init__(this, eparams ,  localfile,  outfile, frames, progressCb):
+    def __init__(this, eparams ,  localfile,  outfile, frames, progressCb, srcFps=None):
         this.eparams=eparams
         this.progressCb=progressCb
         this.infile=localfile
         this.outfile=outfile
         this.frames=frames
-        this.commonargs=["ffmpeg", "-y", "-i", localfile]
+        this.commonargs=["ffmpeg", "-y"]
+        if srcFps<>None: this.commonargs+=["-r", str(srcFps)]
+        this.commonargs+=["-i", localfile]
     def run(this):
         xargs=this.commonargs[:]+[this.outfile]
         print xargs
