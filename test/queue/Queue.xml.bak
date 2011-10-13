@@ -11,11 +11,11 @@
 	/>
 -->
 
-   <task guid="task4" action="ENCODE"
+   <task guid="task4" action="COMPRESS"
       srcStore="store1"
       url="http://admin.juzou.tv/mobile/Extremists-176.mp4"
       destAssetItemType="flv"
-      srcAssetItem="assetw"
+      srcAssetItem="asseti1"
       srcAssetItemType="multi:png:10"
       dateStart=""
       encoder="mp4encoder"
