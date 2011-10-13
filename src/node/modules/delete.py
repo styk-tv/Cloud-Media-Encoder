@@ -26,6 +26,8 @@ from shutil import rmtree
 
 
 class DeleteExecutor(AbstractTaskExecutor):
+    requiredParams=["srcStore", "srcAssetItem"]
+
     def __init__(self,reporter, workflow,task):
         super(DeleteExecutor, self).__init__(reporter, workflow, task)
         slist=LocalStoreList()

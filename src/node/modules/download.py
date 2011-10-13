@@ -27,6 +27,8 @@ import urllib2
 
 
 class DownloadExecutor(AbstractTaskExecutor):
+    requiredParams=["destStore", "destAssetItem", "destAssetItemType", "url"]
+
     def __init__(self,reporter, workflow,task):
         super(DownloadExecutor, self).__init__(reporter, workflow, task)
         slist=LocalStoreList()

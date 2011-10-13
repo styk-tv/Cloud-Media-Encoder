@@ -88,6 +88,9 @@ class FFmpegEncoder(Encoder):
         
 
 class EncoderExecutor(AbstractTaskExecutor):
+    requiredParams=["srcStore", "srcAssetItem", "srcAssetItemType", "encoder", "destStore"]
+    optionalParams=["destAssetItem"]
+    
     def __init__(self,reporter, workflow,task):
         super(EncoderExecutor, self).__init__(reporter, workflow, task)
         elist=EncodersList()

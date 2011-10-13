@@ -18,7 +18,7 @@
 ##
 
 
-from xml.dom.minidom import getDOMImplementation,parse
+from xml.dom.minidom import getDOMImplementation,parse, Element
 from abstractqueue import *
 import pkgutil
 from localstores import LocalStoreList
@@ -33,18 +33,27 @@ DATEFORMAT="%d/%m/%Y %H:%M:%S"
 def now():
     return datetime.utcnow().strftime(DATEFORMAT)
 
+localstores=LocalStoreList()
+
     
 class XMLTask(Task):
   def __init__(self,element):
     super(XMLTask,self).__init__(element.getAttribute("guid"),element.getAttribute("action"))
-    self.attributes={}
+    self.element=element
     for i in range(element.attributes.length):
       self.attributes[element.attributes.item(i).name]=element.attributes.item(i).value
-      
+    self.verify()
+    
+  #verify valid store, if provided
+  def verify(self):
+     if self.attributes.has_key("srcStore"):
+        store=localstores.getByUuid(self.attributes["srcStore"])
+        if store==None:  raise Exception("Uknown source store")
+
+
   def isSourceReady(self):
     if self.attributes.has_key("srcStore") and self.attributes.has_key("srcAssetItem"):
-      slist=LocalStoreList()
-      store=slist.getByUuid(self.attributes["srcStore"])
+      store=localstores.getByUuid(self.attributes["srcStore"])
       if store==None: return False
       path=store.findAsset(self.attributes["srcAssetItem"])
       return os.path.exists(path)
@@ -53,9 +62,11 @@ class XMLTask(Task):
 class XMLWorkflow(Workflow):
   def __init__(self,element):
     super(XMLWorkflow,self).__init__(element.getAttribute("guid"))
-    for elm in element.getElementsByTagName("task"):
-      self.tasks.append(XMLTask(elm))
-  
+    for task in element.childNodes:
+        if not isinstance(task, Element):  continue
+        if task.tagName<>"task": raise Exception("Workflow can only contain task elements")
+        self.tasks.append(XMLTask(task))
+
   def isSourceReady(self):
       return self.tasks[0].isSourceReady()
 

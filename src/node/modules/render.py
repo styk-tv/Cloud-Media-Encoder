@@ -51,6 +51,9 @@ class RenderObject(object):
         else: return target
         
 class RenderExecutor(AbstractTaskExecutor):
+    requiredParams=["srcStore", "srcAssetItem", "srcAssetItemType", "destStore"]
+    optionalParams=["destAssetItem"]
+
     def __init__(self,reporter, workflow,task):
         super(RenderExecutor, self).__init__(reporter, workflow, task)
         slist=LocalStoreList()

@@ -57,12 +57,17 @@ def sftp_makedirs(name, sftp):
 
 
 class CopyMoveExecutor(AbstractTaskExecutor):
+    requiredParams=["srcStore", "srcAssetItem",  "destStore"]
+    optionalParams=["destAssetItem"]
+    supportsRemoteDestination=True
     def __init__(self,reporter, workflow,task, move):
         super(CopyMoveExecutor, self).__init__(reporter, workflow, task)
         slist=LocalStoreList()
         self.move=move
         self.srcassetuid=task.attributes["srcAssetItem"]
-        self.dstassetuid=task.attributes["destAssetItem"]
+        self.dstassetuid=task.attributes["srcAssetItem"]
+        if task.attributes.has_key("destAssetItem"): self.dstassetuid=task.attributes["destAssetItem"]
+
         self.srcasset=slist.getByUuid(task.attributes["srcStore"]).findAsset(task.attributes["srcAssetItem"])
         self.targetstore=slist.getByUuid(task.attributes["destStore"])
         self.isLocal=True

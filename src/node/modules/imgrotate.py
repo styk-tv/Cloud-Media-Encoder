@@ -29,6 +29,9 @@ import os
 
 
 class ImgRotateExecutor(AbstractTaskExecutor):
+    requiredParams=["srcStore", "srcAssetItem", "srcAssetItemType", "encoder", "destStore", "direction"]
+    optionalParams=["destAssetItem"]
+
     def __init__(self,reporter, workflow,task):
         super(ImgRotateExecutor, self).__init__(reporter, workflow, task)
         elist=EncodersList()
@@ -42,7 +45,6 @@ class ImgRotateExecutor(AbstractTaskExecutor):
         targetdir=slist.getByUuid(task.attributes["destStore"]).findAsset(dstAsset)
         if not os.path.exists(targetdir): os.makedirs(targetdir)
         self.outfile=slist.getByUuid(task.attributes["destStore"]).findAssetFile(dstAsset, self.eparams.outputtype)
-        if not task.attributes.has_key("direction"): raise Exception("No direction specified")
         type=task.attributes["direction"]
         if type=="CCW90" or type=="CW270": self.type=Image.ROTATE_90
         elif type=="CCW180" or type=="CW180": self.type=Image.ROTATE_180

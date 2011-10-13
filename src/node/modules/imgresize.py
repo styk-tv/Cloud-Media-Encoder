@@ -29,6 +29,9 @@ import os
 
 
 class ImgResizeExecutor(AbstractTaskExecutor):
+    requiredParams=["srcStore", "srcAssetItem", "srcAssetItemType", "encoder", "destStore"]
+    optionalParams=["destAssetItem"]
+
     def __init__(self,reporter, workflow,task):
         super(ImgResizeExecutor, self).__init__(reporter, workflow, task)
         elist=EncodersList()

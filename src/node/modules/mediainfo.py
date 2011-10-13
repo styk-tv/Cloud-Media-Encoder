@@ -28,6 +28,8 @@ import pyexiv2
 
 
 class MediaInfoExecutor(AbstractTaskExecutor):
+    requiredParams=["srcStore", "srcAssetItem", "srcAssetItemType"]
+
     def __init__(self,reporter, workflow,task):
         super(MediaInfoExecutor, self).__init__(reporter, workflow, task)
         slist=LocalStoreList()

@@ -30,6 +30,7 @@ class Task(object):
   def __init__(self,id,action):
     self.id=id
     self.action=action
+    self.attributes={}
 
 class Workflow(object):
   def __init__(self,id):
@@ -47,13 +48,23 @@ class AbstractProgressReporter(object):
     pass
 
 class AbstractTaskExecutor(object):
+  requiredParams=[]
+  optionalParams=[]
+  supportsRemoteDestination=False
   def __init__(self,reporter, workflow,task):
     self.workflow=workflow
     self.task=task
     self.reporter=reporter
     self.taskNr=self.workflow.tasks.index(self.task)
+    
   def run(self):
     pass
+    
+  @staticmethod
+  def verify(executor, task):
+      for i in executor.requiredParams:
+          if not task.attributes.has_key(i): raise Exception("Required attribute "+i+" missing")
+      
   def updateProgress(self, progress):
     self.reporter.setStatus(ST_WORKING, progress, "Working", self.workflow, self.task)
     self.reporter.setStatus(ST_WORKING,100.0*self.taskNr/len(self.workflow.tasks)+progress/len(self.workflow.tasks),"Working",self.workflow)
@@ -69,7 +80,10 @@ class WorkflowManager(object):
   def releaseWorkflow(self,jdesc):
     pass
   def getTaskExecutor(self,workflow,task):
-    if self.executors.has_key(task.action): return self.executors[task.action](self.getProgressReporter(), workflow,task)
+    if self.executors.has_key(task.action): 
+        exc=self.executors[task.action]
+        AbstractTaskExecutor.verify(exc, task)
+        return exc(self.getProgressReporter(), workflow,task)
     else: raise Exception("Don't know how to execute "+task.action)
  
   def registerExecutor(self,action,cls):
