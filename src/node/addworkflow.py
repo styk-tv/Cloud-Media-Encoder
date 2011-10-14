@@ -65,7 +65,7 @@ def verify(doc):
 try:
     workflow=parse(sys.stdin)
     if workflow.documentElement.tagName<>"workflow": raise Exception("Root tag should be workflow")
-    if not workflow.documentElement.hasAttribute("guid"): elm.setAttribute("guid",  uuid4().get_hex())
+    if not workflow.documentElement.hasAttribute("guid"): workflow.documentElement.setAttribute("guid",  uuid4().get_hex())
 
     guid=workflow.documentElement.getAttribute("guid")
     with LockedFile(Config.QUEUEDIR+"/Queue.xml","r") as f:
