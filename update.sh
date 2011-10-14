@@ -9,5 +9,6 @@ if [ ! -e .git ]; then
     fi
 fi
 
+git reset --hard
 git pull
 ./install.sh
