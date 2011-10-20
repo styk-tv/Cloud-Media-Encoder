@@ -68,7 +68,9 @@ chown -R node /var/www/volumes
 
 
 mkdir -p /opt/node/queue 
-echo "<queue />" > /opt/node/queue/Queue.xml
+if [ ! -f /opt/node/queue/Queue.xml ]; then
+    echo "<queue />" > /opt/node/queue/Queue.xml
+fi
 
 if [ ! -d /opt/node/etc ]; then
     cp -r /opt/node/extra /opt/node/etc
@@ -83,6 +85,9 @@ if [ ! -f /opt/node/etc/Stores.xml ]; then
     echo "<stores />" > /opt/node/etc/Stores.xml
 fi
 
+if [ ! -f /opt/node/etc/LocalStores.xml ]; then
+    echo "<stores />" > /opt/node/etc/LocalStores.xml
+fi
 
 insserv -r stock-footage-node || true
 rm /etc/init.d/node-encoding || true
