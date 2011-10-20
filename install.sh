@@ -24,6 +24,9 @@ EOF
 echo "Installing dependencies"
 
 apt-get update
+if [ -x /usr/bin/apt-listchanges ]; then
+    apt-get remove --purge -y --force-yes apt-listchanges
+fi
 apt-get install --force-yes -y ffmpeg python openssh-server python-daemon python-psutil python-paramiko python-m2crypto nginx make python-pam mediainfo python-imaging python-simplejson python-pyexiv2 || exit 1 
 
 
