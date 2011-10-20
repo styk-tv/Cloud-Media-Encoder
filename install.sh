@@ -23,10 +23,10 @@ EOF
 
 echo "Installing dependencies"
 
+APT_LISTCHANGES_FRONTEND="none"
+APT_LISTBUGS_FRONTEND="none"
+
 apt-get update
-if [ -x /usr/bin/apt-listchanges ]; then
-    apt-get remove --purge -y --force-yes apt-listchanges
-fi
 apt-get install --force-yes -y ffmpeg python openssh-server python-daemon python-psutil python-paramiko python-m2crypto nginx make python-pam mediainfo python-imaging python-simplejson python-pyexiv2 || exit 1 
 
 
@@ -103,7 +103,7 @@ insserv stock-footage-node
 
 rm -f /etc/rc.local.orig
 mv -f /etc/rc.local /etc/rc.local.orig || true
-ln -s /opt/node/console.py /etc/rc.local
+ln -s /opt/node/extra/initconsole.sh /etc/rc.local
 chmod ugo+x /etc/rc.local
 
 
