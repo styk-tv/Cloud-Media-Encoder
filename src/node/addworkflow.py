@@ -25,6 +25,7 @@ from nodetools.tools import xmlmsg,  LockedFile
 from nodetools.xmlqueue import XMLJobManager,  XMLWorkflow
 from nodetools.abstractqueue import AbstractTaskExecutor
 from nodetools.storelist import StoreList
+from nodetools.localstores import LocalStoreList
 from uuid import uuid4
 import sys
 
@@ -39,16 +40,19 @@ def getTaskExecutor(mng, task):
 def verify(doc):
     mng=XMLJobManager()
     slist=StoreList()
+    llist=LocalStoreList()
     mng.registerPlugins()
     workflow=XMLWorkflow(doc.documentElement)
     for task in workflow.tasks:
         exc=getTaskExecutor(mng, task)
         if task.attributes.has_key("destStore"):
+            store=llist.getByUuid(task.attributes["destStore"])
+            if store<>None: continue
             store=slist.getByUuid(task.attributes["destStore"])
             if store==None: raise Exception("Unknown destination store")
             # oops, requested remote destination store and executor does not support it
             # change destination store to local one and add MOVE task after that
-            if not store.isLocal() and not exc.supportsRemoteDestination:
+            if  not exc.supportsRemoteDestination:
                 task.element.setAttribute("destStore", task.attributes["srcStore"])
                 extra=doc.createElement("task")
                 extra.setAttribute("guid",  uuid4().get_hex())
