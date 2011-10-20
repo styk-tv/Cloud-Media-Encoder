@@ -47,7 +47,7 @@ def change_password(user):
 def getMainIp():
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("gmail.com",80))
+        s.connect(("wiki.styk.tv",80))
         return s.getsockname()[0]
     except Exception, e:
         return "<unavailable>"
