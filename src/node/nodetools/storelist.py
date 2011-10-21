@@ -59,7 +59,7 @@ class Disk:
   def __init__(self,element):
     self.uuid=element.getAttribute("guid")
     self.host=element.getAttribute("host")
-    self.online=os.path.exists(Config.STORES_ROOT+"/"+self.uuid)
+    self.online=os.path.exists(Config.STORES_ROOT+"/"+self.uuid) and (os.stat(Config.STORES_ROOT).st_dev<>os.stat(Config.STORES_ROOT+"/"+self.uuid).st_dev)
     self.freespace=0
     if self.online: self.freespace=freespace(Config.STORES_ROOT+"/"+self.uuid)
     self.stores=[]
