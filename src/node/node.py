@@ -31,7 +31,9 @@ import os
 from nodetools.pidlockfile import PIDLockFile
 import re
 import pwd
+import logging
 import grp
+from datetime import datetime
 import subprocess
 import daemon
 import sys
@@ -52,10 +54,27 @@ def drop_privileges(uid_name='nobody', gid_name='nogroup'):
     os.setgid(running_gid)
     os.setuid(running_uid)
 
+def setupLogging():
+  logfile=Config.CONFIGDIR+"/node.log"
+  if os.path.exists(logfile):
+      os.rename(logfile, logfile+"."+str(datetime.now()))
+  logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s:%(msecs)d %(name)-12s %(levelname)-8s %(message)s',
+                    datefmt='%d %H:%M:%S',
+                    filename=logfile,
+                    filemode='w')
+  console = logging.StreamHandler()
+  console.setLevel(logging.DEBUG)
+  formatter = logging.Formatter('%(msecs)d %(name)-12s %(levelname)-8s %(message)s')
+  console.setFormatter(formatter)
+  logging.getLogger('').addHandler(console)
+
+
 
         
 def main():
   drop_privileges(Config.USER)
+  setupLogging()
   with PIDLockFile(Config.CONFIGDIR+"/node.pid"):
       jman=XMLJobManager()
       jman.registerPlugins()

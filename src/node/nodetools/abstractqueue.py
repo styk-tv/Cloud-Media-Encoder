@@ -123,6 +123,7 @@ class Queue:
         self.jman.releaseWorkflow(workflow)
         return
     self.reporter.setStatus(ST_FINISHED,100,"FINISHED",workflow)
+    logging.info("Finished workflow "+workflow.id)
     self.jman.releaseWorkflow(workflow)
       
   

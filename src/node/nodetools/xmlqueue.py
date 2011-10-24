@@ -24,6 +24,7 @@ import pkgutil
 from localstores import LocalStoreList
 from config import Config
 from datetime import datetime
+import logging
 import os
 import modules
 from tools import LockedFile
@@ -80,10 +81,15 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
      
   def getNextWorkflow(self):
     doc=self.load()
+    logging.debug("Getting next workflow")
     for wfnode in doc.getElementsByTagName("workflow"):
       if len(wfnode.getAttribute("dateStart"))>0: continue
       wflow=XMLWorkflow(wfnode)
-      if wflow.isSourceReady(): return wflow  
+      if wflow.isSourceReady(): 
+          logging.debug("Got "+wflow.id)
+          return wflow  
+      else: logging.debug("Source is not ready for "+wflow.id)
+    logging.debug("No workflows to process")
     return None
   def load(self):
     with LockedFile(self.target, "r") as f:
@@ -139,9 +145,11 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
     return (doc, nodes)
     
   def clearAll(self):
+      logging.info("Queue cleared")
       with LockedFile(self.target, "w") as f: f.write("<queue/>")
       return 0
   def clear(self, status):
+    logging.info("Clearing all workflows with status "+str(status))
     (doc, nodes)=self._filterQueue(status)
     for node in nodes: doc.documentElement.removeChild(node)
     self.save(doc)
