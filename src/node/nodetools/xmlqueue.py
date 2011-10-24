@@ -81,7 +81,7 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
      
   def getNextWorkflow(self):
     doc=self.load()
-    logging.debug("Getting next workflow")
+    logging.debug("Getting next workflow (there are %i)", len(doc.getElementsByTagName("workflow")))
     for wfnode in doc.getElementsByTagName("workflow"):
       if len(wfnode.getAttribute("dateStart"))>0: continue
       wflow=XMLWorkflow(wfnode)
