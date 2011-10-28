@@ -112,7 +112,13 @@ class CopyMoveExecutor(AbstractTaskExecutor):
 class MoveExecutor(CopyMoveExecutor):
     def __init__(self,reporter, workflow,task):
         super(MoveExecutor, self).__init__(reporter, workflow, task, True)
+
+
+class CopyExecutor(CopyMoveExecutor):
+    def __init__(self,reporter, workflow,task):
+        super(CopyExecutor, self).__init__(reporter, workflow, task,False)
     
 
+
 def pluginInfo():
-    return "MOVE", MoveExecutor
+    return [ ("MOVE", MoveExecutor),  ("COPY", CopyExecutor) ]

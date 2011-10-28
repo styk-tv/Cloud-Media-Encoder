@@ -25,26 +25,43 @@ from nodetools.abstractqueue import AbstractTaskExecutor,Queue
 import os
 
 
-class EncryptExecutor(AbstractTaskExecutor):
-    def __init__(self,reporter, workflow,task):
-        super(EncryptExecutor, self).__init__(reporter, workflow, task)
+class AESExecutor(AbstractTaskExecutor):
+    def __init__(self,reporter, workflow,task,  encrypt):
+        super(AESExecutor, self).__init__(reporter, workflow, task)
         slist=LocalStoreList()
         self.srcasset=slist.getByUuid(task.attributes["srcStore"]).findAsset(task.attributes["srcAssetItem"])
         self.targetstore=slist.getByUuid(task.attributes["destStore"])
         self.destdir=self.targetstore.findAsset(self.task.attributes["destAssetItem"])
+        self.encrypt=encrypt
+        if not os.path.exists(self.destdir): os.makedirs(self.destdir)
+
     def run(self):
         for ifile in os.listdir(self.srcasset):
             srcfile=os.path.join(self.srcasset, ifile)
             if not os.path.isfile(srcfile): continue
             destfile=os.path.join(self.destdir, ifile)
+            
+            # for encryption add ".aes" 
+            if self.encrypt: destfile=destfile+".aes"
+            
+            # for decryption ignore all files not ending with ".aes"
+            if not self.encrypt:
+                if destfile[-4:]<>".aes": continue
+                destfile=destfile[:-4]
+            
+            self.processSingle(srcfile, destfile)
+    
+    def processSingle(self,  srcfile,  destfile):
+            f_in=None
+            f_out=None
             try:
                 f_in=open(srcfile, "rb")
-                f_out=open(destfile+".enc", "wb")
+                f_out=open(destfile, "wb")
                 self._encryptSingle(f_in, f_out, self._makeCipher(), 0)
             finally:
-                f_in.close()
-                f_out.close()
-             
+                if f_in<>None: f_in.close()
+                if f_out<>None: f_out.close()
+        
 
     def _encryptSingle(self, input, output, cipher, fullen):
         while True:
@@ -55,11 +72,20 @@ class EncryptExecutor(AbstractTaskExecutor):
             output.write(cipher.update(data))
             
     def _makeCipher(self):
-#        k=b64decode(self.task.attributes["key"])
+        k=b64decode(self.task.attributes["key"])
         iv='\0'*16
-        k='\x00'*16
+        op=0
+        if self.encrypt: op=1
         print k, iv
-        return Cipher(alg="aes_128_cbc", key=k, iv=iv, op=1, salt=None)
+        return Cipher(alg="aes_128_cbc", key=k, iv=iv, op=op,  salt=None)
     
+class EncryptExecutor(AESExecutor):
+    def __init__(self,reporter, workflow,task):
+        super(EncryptExecutor, self).__init__(reporter, workflow, task, True)
+
+class DecryptExecutor(AESExecutor):
+    def __init__(self,reporter, workflow,task):
+        super(DecryptExecutor, self).__init__(reporter, workflow, task, False)
+
 def pluginInfo():
-    return "ENCRYPT", EncryptExecutor
+    return [ ("ENCRYPT", EncryptExecutor),  ("DECRYPT", DecryptExecutor) ]

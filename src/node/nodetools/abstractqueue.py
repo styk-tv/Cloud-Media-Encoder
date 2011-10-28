@@ -104,21 +104,22 @@ class Queue:
   
   def perform(self,workflow):
     logging.info("Starting workflow "+workflow.id)
-    self.reporter.setStatus(ST_WORKING,0,"WORKING",workflow)
+    self.reporter.setStatus(ST_WORKING,0,"Working",workflow)
     i=0
     for task in workflow.tasks:
       self.reporter.setCurrent(workflow,task)
-      self.reporter.setStatus(ST_WORKING,0,"WORKING",workflow,task)
+      self.reporter.setStatus(ST_WORKING,0,"Working",workflow,task)
       try:
         executor=self.jman.getTaskExecutor(workflow,task)
         logging.info("Starting task "+task.id)
         executor.run()
         logging.info("Finished task "+task.id)
-        self.reporter.setStatus(ST_FINISHED,100,"FINISHED",workflow,task)
+        self.reporter.setStatus(ST_FINISHED,100,"Finished",workflow,task)
         i=i+1
+        self.reporter.setStatus(ST_WORKING,100.0*i/len(workflow.tasks),"Working",workflow)
       except Exception,e:
         self.reporter.setStatus(ST_ERROR,0,e,workflow,task)
-        self.reporter.setStatus(ST_ERROR,0,e,workflow)
+        self.reporter.setStatus(ST_ERROR,100.0*i/len(workflow.tasks),"Error",workflow)
         logging.exception("Error during workflow "+workflow.id+" task "+task.id)
         self.jman.releaseWorkflow(workflow)
         return

@@ -1,52 +1,33 @@
 <?xml version="1.0" ?><queue dateCompleted="" dateCreated="" dateStart="" destination="192.168.1.211" guid="78D6012F21264C50802247930B8DBE9D" queue_version="0.1">
 
 <workflow guid="ac">
-<!--
-   <task guid="task2" action="MOVE"
-      srcStore="store2"
-      srcAssetItem="vasset"
-      destStore="store2"
-      destAssetItem="vassetx"
-      key="AAAAAAAAAAAAAAAAAAAAAA=="
-	/>
--->
 
-   <task guid="task4" action="COMPRESS"
+   <task guid="task4" action="ENCRYPT"
       srcStore="store1"
       url="http://admin.juzou.tv/mobile/Extremists-176.mp4"
       destAssetItemType="flv"
-      srcAssetItem="asseti1"
-      srcAssetItemType="multi:png:10"
+      srcAssetItem="abc1"
+      key="AAAAAAAAAAAAAAAAAAAAAA=="
+      srcAssetItemType="mp4"
       dateStart=""
-      encoder="mp4encoder"
-      destAssetItem="abvcx"
-      destStore="store2"
+      encoder="th1"
+      destAssetItem="enc"
+      destStore="store1"
       direction="CW180"
-	/>  
-
-<!--   <task guid="task1" action="DOWNLOAD"
+	/>   
+   <task guid="task5" action="DECRYPT"
       srcStore="store1"
       url="http://admin.juzou.tv/mobile/Extremists-176.mp4"
-      destAssetItemType="xs"
-      srcAssetItem="asset1"
-      srcAssetItemType="ts"
+      destAssetItemType="flv"
+      srcAssetItem="enc"
+      key="AAAAAAAAAAAAAAAAAAAAAA=="
+      srcAssetItemType="mp4"
       dateStart=""
       encoder="th1"
-      destAssetItem="abvc"
-      destStore="store2"
-	/>  
+      destAssetItem="dec"
+      destStore="store1"
+      direction="CW180"
+	/>   
 
-   <task guid="task2" action="DOWNLOAD"
-      srcStore="store1"
-      url="http://admin.juzou.tv/mobile/Extremists-176.mp4"
-      destAssetItemType="xs"
-      srcAssetItem="asset1"
-      srcAssetItemType="ts"
-      dateStart=""
-      encoder="th1"
-      destAssetItem="abvc2"
-      destStore="store2"
-	/>  
--->
       </workflow>
          </queue>

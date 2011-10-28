@@ -5,7 +5,7 @@
         <encoder  guid="thencoder" height="200" width="800" outputType="jpg" type="ffmpeg_0612"  version="2.15" thCount="6"/>
         <encoder guid="C53F833BB2D6416380C1ABF051D43ED6" params="-vcodec copy -vbsf h264_mp4toannexb -an" type="ffmpeg_0612" version="2.16"/>
         <!-- 3 evenly spaced thumbnails -->
-        <thumbs type="ffmpeg_0612" version="2.15" width="200" height="150" guid="th1" outputType="png" thCount="2" borderWidth="2" borderRadius="15"
+        <thumbs type="ffmpeg_0612" version="2.15" width="200" height="150" guid="th1" outputType="png" thCount="30" borderWidth="2" borderRadius="15"
             backgroundColor="red" square="1" />
         <image type="PIL" version="2.15" width="200" height="700" guid="img2" outputType="png" thCount="2" borderWidth="2" borderRadius="15"
             backgroundColor="red" square="1" quality="20" watermarkFile="watermark.1.png" borderColor="blue" watermarkX="50%" watermarkY="50%" 

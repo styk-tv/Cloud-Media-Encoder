@@ -221,6 +221,8 @@ class XMLJobManager(WorkflowManager, AbstractProgressReporter):
   def registerPlugin(self, modulename):
       mainmod=__import__("modules."+modulename)
       submod=mainmod.__dict__[modulename]
-      (action, cls)=submod.pluginInfo()
-      self.registerExecutor(action, cls)
+      info=submod.pluginInfo()
+      if isinstance(info, list):
+          for (action, cls) in info: self.registerExecutor(action, cls)
+      else: self.registerExecutor(info[0], info[1])
     

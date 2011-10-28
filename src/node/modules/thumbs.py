@@ -86,7 +86,7 @@ class ThumbsExecutor(AbstractTaskExecutor):
         nr=0
         point=0.0
         ival=self.eparams.thumbsInterval
-        if ival==0: ival=float(fi.duration+1.0)/self.eparams.thumbsCount
+        if ival==0: ival=float(fi.duration)/self.eparams.thumbsCount
         if ival==0: raise Exception("Wrong thumbs interval")
         while True:
             outfile=self.targetdir+"/th_"+self.destAsset+"_"+str(nr)+"."+self.eparams.outputtype
@@ -96,7 +96,7 @@ class ThumbsExecutor(AbstractTaskExecutor):
             if self.eparams.borderWidth>0: self.makeBorderF( outfile)
             point+=ival
             nr+=1
-            if point>=fi.duration: break
+            if point>=fi.duration or (self.eparams.thumbsCount>0 and nr>=self.eparams.thumbsCount): break
         
 def pluginInfo():
     return "THUMBS", ThumbsExecutor
