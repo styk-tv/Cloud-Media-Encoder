@@ -53,6 +53,7 @@ class VideoFFmpegHandler(FFmpegHandler):
             store=slist.getByUuid(this.eparams.watermarkStore)
             (ext, fps)=store.decodeAssetType(this.eparams.watermarkAssetType)
             path=getFFPath(store, this.eparams.watermarkAsset, this.eparams.watermarkAssetType)
+        else: return []
         if fps==None: return this.handleSingleWatermark(path)
         else: return this.handleAnimatedWatermark(path, fps)
 

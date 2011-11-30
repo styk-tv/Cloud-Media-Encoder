@@ -58,6 +58,7 @@ def main_menu():
     else:
         print "5) Start node"
     if os.path.exists("/home/node/styk.tv/update.sh"): print "6) Update node"
+    if os.path.exists(Config.CONFIGDIR+"/node.log"): print "7) Show current log"
     print "0) Exit"
     print
     sys.stdout.write("Enter choice: ")
@@ -130,6 +131,8 @@ def main():
         elif opt=="6":
             os.system("bash /home/node/styk.tv/update.sh")
             sleep(3)
+        elif opt=="7":
+            os.system("less "+Config.CONFIGDIR+"/node.log")
         elif opt=="0": 
             print "Console can be opened again by running /etc/rc.local"
             return
