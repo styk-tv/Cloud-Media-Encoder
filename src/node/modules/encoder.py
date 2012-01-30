@@ -105,7 +105,7 @@ class EncoderExecutor(AbstractTaskExecutor):
         slist=LocalStoreList()
         self.frames=1
         self.overwrite=False
-        if task.attributes_has_key("overwrite"): self.overwrite=(task.attributes["overwrite"].lower()=="true")
+        if task.attributes.has_key("overwrite"): self.overwrite=(task.attributes["overwrite"].lower()=="true")
         dstAsset=task.attributes["srcAssetItem"]
         if task.attributes.has_key("destAssetItem"): dstAsset=task.attributes["destAssetItem"]
 

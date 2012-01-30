@@ -35,6 +35,8 @@ class DownloadExecutor(AbstractTaskExecutor):
         slist=LocalStoreList()
         self.destAsset=task.attributes["destAssetItem"]
         self.targetdir=slist.getByUuid(task.attributes["destStore"]).findAsset(self.destAsset)
+        self.overwrite=False
+        if task.attributes.has_key("overwrite"): self.overwrite=(task.attributes["overwrite"].lower()=="true")
         self.target=slist.getByUuid(task.attributes["destStore"]).findAssetFile(self.destAsset, task.attributes["destAssetItemType"])
         self.url=task.attributes["url"]
         

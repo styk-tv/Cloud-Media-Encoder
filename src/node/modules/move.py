@@ -69,7 +69,7 @@ class CopyMoveExecutor(AbstractTaskExecutor):
         self.dstassetuid=task.attributes["srcAssetItem"]
         if task.attributes.has_key("destAssetItem"): self.dstassetuid=task.attributes["destAssetItem"]
         self.overwrite=False
-        if task.attributes_has_key("overwrite"): self.overwrite=(task.attributes["overwrite"].lower()=="true")
+        if task.attributes.has_key("overwrite"): self.overwrite=(task.attributes["overwrite"].lower()=="true")
 
         self.srcasset=slist.getByUuid(task.attributes["srcStore"]).findAsset(task.attributes["srcAssetItem"])
         self.targetstore=slist.getByUuid(task.attributes["destStore"])
