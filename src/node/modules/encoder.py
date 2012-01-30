@@ -30,6 +30,7 @@ import re
 import subprocess
 import daemon
 import sys
+import logging
 
 
 class VideoFFmpegHandler(FFmpegHandler):
@@ -44,6 +45,7 @@ class VideoFFmpegHandler(FFmpegHandler):
             
         this.commonargs+=[ "-b", str(this.eparams.bitrate)]
         this.commonargs+=["-acodec", this.eparams.acodec, "-ac","2","-ar", "44100", "-ab",str(this.eparams.audiobitrate)]
+        logging.debug("Encoder will use common params "+str(this.commonargs))
     def handleWatermark(this):
         fps=None
         if this.eparams.watermarkFile<>"":
@@ -76,6 +78,7 @@ class Encoder(object):
 class FFmpegEncoder(Encoder):
     def __init__(self, executor):
         super(FFmpegEncoder, self).__init__(executor)
+        logging.debug("Created FFMpeg based encoder")
 
     def run(self):
         fi=FileInfo(self.executor.srcfile)

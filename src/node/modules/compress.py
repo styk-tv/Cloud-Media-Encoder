@@ -24,6 +24,7 @@ from nodetools.localstores import LocalStoreList
 from nodetools.tools import tools
 from os import rename, listdir,  makedirs
 from os.path import dirname, exists, split, abspath
+import logging
 
 from zipfile import ZipFile
 
@@ -43,10 +44,12 @@ class ZipExecutor(AbstractTaskExecutor):
         self.outfile=slist.getByUuid(task.attributes["destStore"]).findAssetFile(self.dstassetuid, "zip")
         
     def run(self):
+	logging.debug("Creating ZIP file %s from asset %s",self.outfile,self.srcasset)
         with ZipFile(self.outfile, "a") as zip:
           files=listdir(self.srcasset)
           i=0.0
           for f in files:
+            logging.debug("Adding %s to ZIP",f)
             zip.write(self.srcasset+"/"+f, f)
             i=i+1
             self.updateProgress(i/len(files)*99)

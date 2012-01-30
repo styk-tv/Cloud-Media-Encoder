@@ -23,6 +23,7 @@ from nodetools.abstractqueue import AbstractTaskExecutor,Queue
 from nodetools.localstores import LocalStoreList
 from nodetools.tools import tools
 from shutil import rmtree
+import logging
 
 
 class DeleteExecutor(AbstractTaskExecutor):
@@ -34,6 +35,7 @@ class DeleteExecutor(AbstractTaskExecutor):
         self.srcasset=slist.getByUuid(task.attributes["srcStore"]).findAsset(task.attributes["srcAssetItem"])
         
     def run(self):
+	logging.debug("Deleting asset %s",self.srcasset)
         rmtree(self.srcasset)
    
 

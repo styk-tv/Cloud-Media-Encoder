@@ -77,7 +77,10 @@ class LocalStoreList(StoreList):
         f.write("   listen "+port+";\n")
         f.write("   server_name "+vhost+";\n")
         f.write("   access_log /var/log/nginx/"+uuid+".access;\n")
-        if store.type=="LI": f.write("   types { } \n")
+        if store.type=="LI": 
+    	    f.write("   types { } \n")
+    	    f.write("   add_header Content-Disposition 'attachment' ;\n")
+    	    
         if redirect404<>None: f.write("   error_page 404  "+redirect404+" ;\n")
         f.write("   location / { root /var/www/volumes/"+store.diskuuid+"/"+uuid+"; } \n")
         f.write("}\n")

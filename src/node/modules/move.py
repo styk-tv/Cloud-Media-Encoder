@@ -24,10 +24,11 @@ from nodetools.localstores import LocalStoreList
 from nodetools.storelist import StoreList
 from nodetools.tools import tools
 from shutil import move, rmtree, copy
-from os import rename, listdir,  makedirs
+from os import rename, listdir,  makedirs,stat
 from os.path import dirname, exists, split, abspath
 import paramiko
 import errno
+import logging
 from nodetools.config import Config
 
 PRIVKEY="/home/"+Config.USER+"/.ssh/id_rsa"
@@ -75,14 +76,40 @@ class CopyMoveExecutor(AbstractTaskExecutor):
             self.isLocal=False
             slist2=StoreList()
             self.targetstore=slist2.getByUuid(task.attributes["destStore"])
-            if self.targetstore==None: raise Exception("Unknown destinatioin store")
+            if self.targetstore==None: raise Exception("Unknown destination store")
             self.desthost=slist2.getDisk(self.targetstore.diskuuid).host
         
     def run(self):
         if self.isLocal: self.localRun()
         else: self.remoteRun()
+        
+        
+        
+    def localAssetId(self,asset):
+	names=sorted(listdir(asset))
+	ret=""
+	for name in names:
+	    ret+=name+":"+str(stat(asset+"/"+name).st_size)+"\n"
+	return ret
+    def remoteAssetId(self,asset,sftp):
+	names=sorted(sftp.listdir(asset))
+	ret=""
+	for name in names:
+	    ret+=name+":"+str(sftp.stat(asset+"/"+name).st_size)+"\n"
+	return ret
+	
     def localRun(self):
+	logging.debug("Will copy local asset %s to local asset %s",self.srcassetuid,self.dstassetuid)
         self.destdir=self.targetstore.findAsset(self.dstassetuid)
+
+        if exists(self.destdir):
+    	    logging.debug("Destination asset exists, checking if is the same as source")
+    	    srcId=self.localAssetId(self.srcasset)
+    	    destId=self.localAssetId(self.destdir)
+    	    logging.debug("Source: %s\nDestination: %s\n",srcId,destId)
+    	    if srcId==destId: return
+    	    else: raise Exception("Destination asset exists and is different from source")
+    	    
         makedirs(self.destdir+".tmp")
         for f in listdir(self.srcasset):
             df=f.replace(self.srcassetuid, self.dstassetuid)
@@ -91,6 +118,7 @@ class CopyMoveExecutor(AbstractTaskExecutor):
 
         rename(self.destdir+".tmp",self.destdir)
     def remoteRun(self):
+	logging.debug("Will copy local asset %s to remote asset %s",self.srcassetuid,self.dstassetuid)
         key = paramiko.RSAKey.from_private_key_file(PRIVKEY)
         transport = paramiko.Transport(self.desthost)
         transport.start_client()
@@ -98,6 +126,16 @@ class CopyMoveExecutor(AbstractTaskExecutor):
 #        sftp=transport.open_session()
         sftp = paramiko.SFTPClient.from_transport(transport)
         self.destdir=self.targetstore.findAsset(self.task.attributes["destAssetItem"])
+        if sftp_exists(self.destdir,sftp):
+    	    logging.debug("Destination asset exists, checking if is the same as source")
+    	    srcId=self.localAssetId(self.srcasset)
+    	    destId=self.remoteAssetId(self.destdir)
+    	    logging.debug("Source: %s\nDestination: %s\n",srcId,destId)
+    	    if srcId==destId: 
+    		transport.close()
+    		return
+    	    else: raise Exception("Destination asset exists and is different from source")
+    	    
         sftp_makedirs(self.destdir+".tmp", sftp)
         files=listdir(self.srcasset)
         i=0.0
