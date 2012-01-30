@@ -104,6 +104,8 @@ class EncoderExecutor(AbstractTaskExecutor):
         else:  raise Exception("Unknown encoder type "+self.eparams.type)
         slist=LocalStoreList()
         self.frames=1
+        self.overwrite=False
+        if task.attributes_has_key("overwrite"): self.overwrite=(task.attributes["overwrite"].lower()=="true")
         dstAsset=task.attributes["srcAssetItem"]
         if task.attributes.has_key("destAssetItem"): dstAsset=task.attributes["destAssetItem"]
 
@@ -119,6 +121,10 @@ class EncoderExecutor(AbstractTaskExecutor):
         self.updateProgress(progress*100.0/self.frames)
  #       self.reporter.setQueueProperty(self.workflow, self.task, "progress",  "%.2f" % (progress*100.0/self.frames))
     def run(self):
+	if os.path.exists(self.outfile):
+	    logging.debug("Output file exists")
+	    if self.overwrite: logging.debug("Overwriting")
+	    else: return
         self.encoder.run()
         
 def pluginInfo():

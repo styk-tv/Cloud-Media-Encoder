@@ -68,6 +68,8 @@ class CopyMoveExecutor(AbstractTaskExecutor):
         self.srcassetuid=task.attributes["srcAssetItem"]
         self.dstassetuid=task.attributes["srcAssetItem"]
         if task.attributes.has_key("destAssetItem"): self.dstassetuid=task.attributes["destAssetItem"]
+        self.overwrite=False
+        if task.attributes_has_key("overwrite"): self.overwrite=(task.attributes["overwrite"].lower()=="true")
 
         self.srcasset=slist.getByUuid(task.attributes["srcStore"]).findAsset(task.attributes["srcAssetItem"])
         self.targetstore=slist.getByUuid(task.attributes["destStore"])
@@ -85,30 +87,16 @@ class CopyMoveExecutor(AbstractTaskExecutor):
         
         
         
-    def localAssetId(self,asset):
-	names=sorted(listdir(asset))
-	ret=""
-	for name in names:
-	    ret+=name+":"+str(stat(asset+"/"+name).st_size)+"\n"
-	return ret
-    def remoteAssetId(self,asset,sftp):
-	names=sorted(sftp.listdir(asset))
-	ret=""
-	for name in names:
-	    ret+=name+":"+str(sftp.stat(asset+"/"+name).st_size)+"\n"
-	return ret
-	
     def localRun(self):
 	logging.debug("Will copy local asset %s to local asset %s",self.srcassetuid,self.dstassetuid)
         self.destdir=self.targetstore.findAsset(self.dstassetuid)
 
         if exists(self.destdir):
-    	    logging.debug("Destination asset exists, checking if is the same as source")
-    	    srcId=self.localAssetId(self.srcasset)
-    	    destId=self.localAssetId(self.destdir)
-    	    logging.debug("Source: %s\nDestination: %s\n",srcId,destId)
-    	    if srcId==destId: return
-    	    else: raise Exception("Destination asset exists and is different from source")
+    	    logging.debug("Destination asset exists")
+    	    if self.overwrite:
+    		rmtree(self.destdir)
+    		logging.debug("Overwriting with source")
+    	    else: return
     	    
         makedirs(self.destdir+".tmp")
         for f in listdir(self.srcasset):
@@ -127,15 +115,9 @@ class CopyMoveExecutor(AbstractTaskExecutor):
         sftp = paramiko.SFTPClient.from_transport(transport)
         self.destdir=self.targetstore.findAsset(self.task.attributes["destAssetItem"])
         if sftp_exists(self.destdir,sftp):
-    	    logging.debug("Destination asset exists, checking if is the same as source")
-    	    srcId=self.localAssetId(self.srcasset)
-    	    destId=self.remoteAssetId(self.destdir)
-    	    logging.debug("Source: %s\nDestination: %s\n",srcId,destId)
-    	    if srcId==destId: 
-    		transport.close()
-    		return
-    	    else: raise Exception("Destination asset exists and is different from source")
-    	    
+    	    logging.debug("Destination asset exists")
+    	    if self.overwrite: raise Exception("Cannot overwrite remote asset")
+    	    else: return
         sftp_makedirs(self.destdir+".tmp", sftp)
         files=listdir(self.srcasset)
         i=0.0

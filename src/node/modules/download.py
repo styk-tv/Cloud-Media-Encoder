@@ -23,6 +23,7 @@ from nodetools.abstractqueue import AbstractTaskExecutor,Queue, ST_WORKING
 from nodetools.localstores import LocalStoreList
 import os
 import urllib2
+import logging
 
 
 
@@ -39,6 +40,10 @@ class DownloadExecutor(AbstractTaskExecutor):
         
     def run(self):
         if not os.path.exists(self.targetdir): os.makedirs(self.targetdir)
+        if os.path.exists(self.target):
+    	    logging.debug("Destination file exists")
+    	    if self.overwrite: logging.debug("Overwriting")
+    	    else: return
         self.httpDownload(self.url, self.target,  {}, self.reportDownloadProgress)
         
     def reportDownloadProgress(self, blocknum, bs, size):
